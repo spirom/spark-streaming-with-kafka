@@ -1,10 +1,10 @@
 # Self-contained examples of Spark streaming integrated with Kafka
 
-THe goal of this project is to make it easy to experiment with Spark Streaming based on Kafka,
+The goal of this project is to make it easy to experiment with Spark Streaming based on Kafka,
 by creating examples that run against an embedded Kafka server and an embedded Spark instance.
 Of course, in making everything easy to work with we also make it perform poorly. It would be a
 really bad idea to try to learn anything about performance from this project: it's all
-about functionality, although we sometimes get insight into performance by understanding
+about functionality, although we sometimes get insight into performance issues by understanding
 the way the
 code interacts with RDD partitioning in Spark and topic partitioning in Kafka.
 

@@ -4,6 +4,9 @@ import java.io.IOException
 
 import info.batey.kafka.unit.KafkaUnit
 
+/**
+  * Use https://github.com/chbatey/kafka-unit to control an embedded Kafka instance.
+  */
 @throws[IOException]
 class EmbeddedKafkaServer() {
   private val kafkaServer = new KafkaUnit

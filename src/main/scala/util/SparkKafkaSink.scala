@@ -4,7 +4,12 @@ import java.util.Properties
 
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 
-
+/**
+  * For publishing to Kafka from every partition of an RDD -- see
+  * http://allegro.tech/2015/08/spark-kafka-integration.html
+  *
+  * @param createProducer
+  */
 class SparkKafkaSink(createProducer: () => KafkaProducer[String, String]) extends Serializable {
 
   lazy val producer = createProducer()

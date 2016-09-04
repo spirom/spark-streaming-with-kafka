@@ -8,9 +8,20 @@ import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializ
 
 import scala.collection.JavaConversions._
 
-
+/**
+  * Simple utilities for connecting directly to Kafka.
+  * @param connection
+  */
 class DirectKafkaClient(connection: String) {
 
+
+  /**
+    * Read and print the specified number of records from the specified topic.
+    * Poll for as long as necessary.
+    * @param config
+    * @param topic
+    * @param max
+    */
   def consumeAndPrint(config: Properties, topic: String, max: Int): Unit = {
     // configure a consumer
 
