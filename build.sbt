@@ -18,3 +18,6 @@ libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.0.0"
 libraryDependencies += "org.apache.kafka" % "kafka-clients" % "0.10.0.0"
 
 libraryDependencies += "info.batey.kafka" % "kafka-unit" % "0.6"
+
+libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7"
+
