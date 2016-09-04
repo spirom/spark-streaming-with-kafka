@@ -14,6 +14,8 @@ class EmbeddedKafkaServer() {
 
   def getKafkaConnect: String = kafkaServer.getKafkaConnect
 
+  def getZkConnect: String = "localhost:" + kafkaServer.getZkPort
+
   def start() {
     kafkaServer.startup()
   }

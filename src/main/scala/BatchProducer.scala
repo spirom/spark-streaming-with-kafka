@@ -1,9 +1,8 @@
 
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.streaming.{Seconds, StreamingContext}
 import util.{DirectKafkaClient, EmbeddedKafkaServer, SparkKafkaSink}
 
-object Basic {
+object BatchProducer {
   def main (args: Array[String]) {
 
     val topic = "foo"
@@ -15,11 +14,8 @@ object Basic {
     val client = new DirectKafkaClient(kafkaServer.getKafkaConnect)
 
 
-    val conf = new SparkConf().setAppName("QueueBasedStreaming").setMaster("local[4]")
+    val conf = new SparkConf().setAppName("BatchProducer").setMaster("local[4]")
     val sc = new SparkContext(conf)
-
-    // streams will produce data every second
-    val ssc = new StreamingContext(sc, Seconds(1))
 
     val max = 10
 
