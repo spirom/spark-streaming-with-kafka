@@ -8,8 +8,8 @@ import info.batey.kafka.unit.KafkaUnit
 class EmbeddedKafkaServer() {
   private val kafkaServer = new KafkaUnit
 
-  def createTopic(topic: String) {
-    kafkaServer.createTopic(topic)
+  def createTopic(topic: String, partitions: Int = 1) {
+    kafkaServer.createTopic(topic, partitions)
   }
 
   def getKafkaConnect: String = kafkaServer.getKafkaConnect
