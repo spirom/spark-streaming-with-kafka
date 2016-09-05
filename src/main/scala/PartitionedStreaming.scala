@@ -1,24 +1,15 @@
 import java.util.Properties
 
+import kafka.serializer.StringDecoder
+import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{SimpleKafkaClient, EmbeddedKafkaServer, SparkKafkaSink}
-import org.apache.spark.streaming.kafka.KafkaUtils
+import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * The most basic streaming example: starts a Kafka server, creates a topic, creates a stream
-  * to process that topic, and publishes some data using the SparkKafkaSink.
-  *
-  * Notice there's quite a lot of waiting. It takes some time for streaming to get going,
-  * and data published too early tends to be missed by the stream. (No doubt,t his is partly
-  * because this example sues the simplest method to create the stream, and thus doesn't
-  * get an opportunity to set auto.offset.reset to "earliest".
-  *
-  * Also, data that is published takes some time to propagate to the stream.
-  * This seems inevitable, and is almost guaranteed to be slower
-  * in a self-contained example like this.
+  * NOTE: this won't work until Spark 2.1.0 comes along.
   */
-object SimpleStreaming {
+object PartitionedStreaming {
 
   /**
     * Publish some data to a topic. Encapsulated here to ensure serializability.
@@ -52,7 +43,7 @@ object SimpleStreaming {
 
 
 
-    val conf = new SparkConf().setAppName("SimpleStreaming").setMaster("local[4]")
+    val conf = new SparkConf().setAppName("PartitionedStreaming").setMaster("local[4]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second
@@ -60,13 +51,15 @@ object SimpleStreaming {
 
     val max = 1000
 
-    // only subscribing to one topic and all four partitions
-    val topicMap =
-      Map[String, Int](topic -> 4)
     // Create the stream. Group doesn't matter as there won't be other subscribers.
     // Notice that the default is to assume the topic is receiving String keys and values.
+    val kafkaParams = Map(
+      "metadata.broker.list" -> kafkaServer.getKafkaConnect,
+      "auto.offset.reset" -> "smallest"
+    )
     val kafkaStream =
-      KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "MyGroup", topicMap)
+      KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
+        ssc, kafkaParams, Set(topic))
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {

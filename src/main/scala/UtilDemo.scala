@@ -1,7 +1,7 @@
 
 import org.apache.kafka.clients.consumer.{ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import util.{DirectKafkaClient, EmbeddedKafkaServer}
+import util.{SimpleKafkaClient, EmbeddedKafkaServer}
 
 
 /**
@@ -23,9 +23,9 @@ object UtilDemo {
 
     // create a topic
 
-    kafkaServer.createTopic(topic)
+    kafkaServer.createTopic(topic, 4)
 
-    val client = new DirectKafkaClient(kafkaServer.getKafkaConnect)
+    val client = new SimpleKafkaClient(kafkaServer.getKafkaConnect)
 
     // configure a producer and send some records
 

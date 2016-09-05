@@ -1,7 +1,7 @@
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{DirectKafkaClient, EmbeddedKafkaServer}
+import util.{SimpleKafkaClient, EmbeddedKafkaServer}
 
 /**
   * This example demonstrates that exceptions encountered in stream processing are
@@ -20,7 +20,7 @@ object ExceptionPropagation {
     kafkaServer.start()
     kafkaServer.createTopic(topic, 4)
 
-    val client = new DirectKafkaClient(kafkaServer.getKafkaConnect)
+    val client = new SimpleKafkaClient(kafkaServer.getKafkaConnect)
 
 
     val conf = new SparkConf().setAppName("ExceptionPropagation").setMaster("local[4]")

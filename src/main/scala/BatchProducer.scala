@@ -1,6 +1,6 @@
 
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{DirectKafkaClient, EmbeddedKafkaServer, SparkKafkaSink}
+import util.{SimpleKafkaClient, EmbeddedKafkaServer, SparkKafkaSink}
 
 /**
   * This example sues Spark but doesn't use streaming. It starts a Kafka server, creates a
@@ -17,9 +17,9 @@ object BatchProducer {
 
     val kafkaServer = new EmbeddedKafkaServer()
     kafkaServer.start()
-    kafkaServer.createTopic(topic)
+    kafkaServer.createTopic(topic, 4)
 
-    val client = new DirectKafkaClient(kafkaServer.getKafkaConnect)
+    val client = new SimpleKafkaClient(kafkaServer.getKafkaConnect)
 
 
     val conf = new SparkConf().setAppName("BatchProducer").setMaster("local[4]")

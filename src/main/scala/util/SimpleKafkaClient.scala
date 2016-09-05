@@ -12,7 +12,7 @@ import scala.collection.JavaConversions._
   * Simple utilities for connecting directly to Kafka.
   * @param connection
   */
-class DirectKafkaClient(connection: String) {
+class SimpleKafkaClient(connection: String) {
 
 
   /**
@@ -47,7 +47,9 @@ class DirectKafkaClient(connection: String) {
       count = count + records.count
 
       // must specify the topic as we could have subscribed to more than one
-      records.records(topic).foreach(rec => println(rec.key() + ":" + rec.value()))
+      records.records(topic).foreach(rec => {
+        println("[ " + rec.partition() + " ] " + rec.key() + ":" + rec.value())
+      })
     }
 
     println("*** got the expected number of messages")
@@ -58,6 +60,7 @@ class DirectKafkaClient(connection: String) {
     config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
     config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
     config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connection)
+    //config.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, "org.apache.kafka.clients.producer.internals.DefaultPartitioner")
     config
   }
 

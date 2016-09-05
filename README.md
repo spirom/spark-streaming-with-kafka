@@ -22,7 +22,7 @@ behind this are documented in the Spark 2.1.0 documentation, which is not yet av
 | File                  | Purpose    |
 |---------------------------------|-----------------------|
 | util/EmbeddedKafkaServer.scala | Starting and stopping an embedded Kafka server and create topics. |
-| util/DirectKafkaClient.scala | Directly connect to Kafka without using Spark. |
+| util/SimpleKafkaClient.scala | Directly connect to Kafka without using Spark. |
 | util/SparkKafkaSink.scala | Support for publishing to Kafka topic in parallel from Spark. |
 
 ## Examples
