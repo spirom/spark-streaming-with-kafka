@@ -1,6 +1,8 @@
+import java.util.Properties
+
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{DirectKafkaClient, EmbeddedKafkaServer, Monitoring, SparkKafkaSink}
+import util.{DirectKafkaClient, EmbeddedKafkaServer, SparkKafkaSink}
 import org.apache.spark.streaming.kafka.KafkaUtils
 
 /**
@@ -17,6 +19,29 @@ import org.apache.spark.streaming.kafka.KafkaUtils
   * in a self-contained example like this.
   */
 object SimpleStreaming {
+
+  /**
+    * Publish some data to a topic. Encapsulated here to ensure serializability.
+    * @param max
+    * @param sc
+    * @param topic
+    * @param config
+    */
+  def send(max: Int, sc: SparkContext, topic: String, config: Properties): Unit = {
+
+    // put some data in an RDD and publish to Kafka
+    val numbers = 1 to max
+    val numbersRDD = sc.parallelize(numbers, 4)
+
+    val kafkaSink = sc.broadcast(SparkKafkaSink(config))
+
+    println("*** producing data")
+
+    numbersRDD.foreach { n =>
+      kafkaSink.value.send(topic, "key_" + n, "string_" + n)
+    }
+  }
+
   def main (args: Array[String]) {
 
     val topic = "foo"
@@ -25,7 +50,6 @@ object SimpleStreaming {
     kafkaServer.start()
     kafkaServer.createTopic(topic, 4)
 
-    val client = new DirectKafkaClient(kafkaServer.getKafkaConnect)
 
 
     val conf = new SparkConf().setAppName("SimpleStreaming").setMaster("local[4]")
@@ -56,33 +80,31 @@ object SimpleStreaming {
 
     ssc.start()
 
-    val monitorThread = Monitoring.getMonitorThread(ssc)
-
     println("*** started termination monitor")
 
     // streams seem to need some time to get going
     Thread.sleep(5000)
 
-    // put some data in an RDD and publish to Kafka
-    val numbers = 1 to max
-    val numbersRDD = sc.parallelize(numbers, 4)
+    val producerThread = new Thread("Streaming Termination Controller") {
+      override def run() {
+        val client = new DirectKafkaClient(kafkaServer.getKafkaConnect)
 
-    val kafkaSink = sc.broadcast(SparkKafkaSink(client.getBasicStringStringProducer(kafkaServer)))
-
-    println("*** producing data")
-
-    numbersRDD.foreach { n =>
-      kafkaSink.value.send(topic, "key_" + n, "string_" + n)
+        send(max, sc, topic, client.getBasicStringStringProducer(kafkaServer))
+        Thread.sleep(5000)
+        println("*** requesting streaming termination")
+        ssc.stop(stopSparkContext = false, stopGracefully = true)
+      }
     }
+    producerThread.start()
 
-    // wait for the data to propagate --
-    Thread.sleep(5000)
-
-    // stop streaming
-    ssc.stop(true)
-
-    // make sure any messages get printed
-    monitorThread.join()
+    try {
+      ssc.awaitTermination()
+      println("*** streaming terminated")
+    } catch {
+      case e: Exception => {
+        println("*** streaming exception caught in monitor thread")
+      }
+    }
 
     // stop Spark
     sc.stop()
