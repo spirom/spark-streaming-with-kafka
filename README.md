@@ -11,7 +11,7 @@ code interacts with RDD partitioning in Spark and topic partitioning in Kafka.
 ## Dependencies
 
 The project was created with IntelliJ Idea 14 Community Edition,
-JDK 1.7, Scala 2.11.2, Kafka 0.10.0.0, kafka-unit 0.6 and Spark 2.0.0 on Ubuntu Linux.
+JDK 1.7, Scala 2.11.2, Kafka 0.8.2.1, kafka-unit 0.2 and Spark 2.0.0 on Ubuntu Linux.
 
 It uses the package spark-streaming-kafka-0-8 for Spark Streaming integration with Kafka.
 This is to obtain access to the stable API -- the details
@@ -32,4 +32,5 @@ behind this are documented in the Spark 2.1.0 documentation, which is not yet av
 | UtilDemo.scala | How to use the Kafka utilities described above. |
 | BatchProducer.scala | Publishing to a Kafka topic in parallel from a Spark batch job. |
 | SimpleStreaming.scala | Simple way to set up streaming from a Kafka topic. |
+| PartitionedStreaming.scala | RDD partitioning is aware of Kafka topic partitioning. |
 | ExceptionPropagation.scala | Show how call to awaitTermination() throws propagated exceptions. |
