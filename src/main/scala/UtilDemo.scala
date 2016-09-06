@@ -25,7 +25,7 @@ object UtilDemo {
 
     kafkaServer.createTopic(topic, 4)
 
-    val client = new SimpleKafkaClient(kafkaServer.getKafkaConnect)
+    val client = new SimpleKafkaClient(kafkaServer)
 
     // configure a producer and send some records
 
@@ -42,6 +42,8 @@ object UtilDemo {
     }
 
     val consumerConfig = client.getBasicStrignStringConsumer(kafkaServer)
+
+    Thread.sleep(5000)
 
     client.consumeAndPrint(consumerConfig, topic, max)
 

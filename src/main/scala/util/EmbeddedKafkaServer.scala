@@ -15,8 +15,8 @@ class EmbeddedKafkaServer() {
   private val LOGGER = LoggerFactory.getLogger(classOf[EmbeddedKafkaServer])
   //private val zkPort = getEphemeralPort
   //private val kbPort = getEphemeralPort
-  private val zkPort = 39001
-  private val kbPort = 39002
+  val zkPort = 39001
+  val kbPort = 39002
 
   private val kafkaServer = new KafkaUnit(zkPort, kbPort)
 

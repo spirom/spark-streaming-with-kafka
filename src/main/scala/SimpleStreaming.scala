@@ -87,7 +87,7 @@ object SimpleStreaming {
 
     val producerThread = new Thread("Streaming Termination Controller") {
       override def run() {
-        val client = new SimpleKafkaClient(kafkaServer.getKafkaConnect)
+        val client = new SimpleKafkaClient(kafkaServer)
 
         send(max, sc, topic, client.getBasicStringStringProducer(kafkaServer))
         Thread.sleep(5000)

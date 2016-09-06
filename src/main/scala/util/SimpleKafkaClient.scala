@@ -1,7 +1,11 @@
 package util
 
+import java.nio.ByteBuffer
 import java.util.Properties
 
+import kafka.api.{FetchRequest, FetchRequestBuilder, FetchResponse}
+import kafka.consumer.SimpleConsumer
+import kafka.message.ByteBufferMessageSet
 import org.apache.kafka.clients.consumer.{ConsumerConfig, ConsumerRecords, KafkaConsumer}
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
@@ -10,10 +14,17 @@ import scala.collection.JavaConversions._
 
 /**
   * Simple utilities for connecting directly to Kafka.
-  * @param connection
   */
-class SimpleKafkaClient(connection: String) {
+class SimpleKafkaClient(server: EmbeddedKafkaServer) {
 
+
+  private def printMessages(messageSet: ByteBufferMessageSet) : Unit =  {
+    for (messageAndOffset <- messageSet.iterator) {
+      val payload = messageAndOffset.message.payload
+      val bytes = payload.array()
+      System.out.println(new String(bytes, "UTF-8"))
+    }
+  }
 
   /**
     * Read and print the specified number of records from the specified topic.
@@ -25,6 +36,22 @@ class SimpleKafkaClient(connection: String) {
   def consumeAndPrint(config: Properties, topic: String, max: Int): Unit = {
     // configure a consumer
 
+    val clientId = "someclient"
+
+    val simpleConsumer = new SimpleConsumer("localhost",
+      server.kbPort,
+      10000,
+      100000,
+      clientId)
+    val req = new FetchRequestBuilder()
+      .clientId(clientId)
+      .addFetch(topic, 0, 0L, 100)
+      .build()
+    val fetchResponse = simpleConsumer.fetch(req)
+    val ms = fetchResponse.messageSet(topic, 0)
+    printMessages(ms)
+
+    /*
 
     val consumer = new KafkaConsumer[String, String](config);
 
@@ -55,7 +82,7 @@ class SimpleKafkaClient(connection: String) {
         })
       }
     }
-
+*/
     println("*** got the expected number of messages")
   }
 
@@ -63,7 +90,7 @@ class SimpleKafkaClient(connection: String) {
     val config: Properties = new Properties
     config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
     config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
-    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, connection)
+    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, server.getKafkaConnect)
     //config.put(ProducerConfig.PARTITIONER_CLASS_CONFIG, "org.apache.kafka.clients.producer.internals.DefaultPartitioner")
     config
   }
@@ -73,7 +100,7 @@ class SimpleKafkaClient(connection: String) {
     consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "MyGroup")
     consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
     consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
-    consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connection)
+    consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, server.getKafkaConnect)
     consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "smallest")
     consumerConfig.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY, "roundrobin")
 

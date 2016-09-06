@@ -20,7 +20,7 @@ object ExceptionPropagation {
     kafkaServer.start()
     kafkaServer.createTopic(topic, 4)
 
-    val client = new SimpleKafkaClient(kafkaServer.getKafkaConnect)
+    val client = new SimpleKafkaClient(kafkaServer)
 
 
     val conf = new SparkConf().setAppName("ExceptionPropagation").setMaster("local[4]")
