@@ -7,11 +7,11 @@
         <target>System.err</target>
     </appender>
 
-    <logger name="kafka.server.KafkaServer" level="WARN" additivity="false">
+    <logger name="kafka.server.KafkaServer" level="DEBUG" additivity="false">
         <appender-ref ref="STDERR" />
     </logger>
 
-    <root level="WARN">
+    <root level="DEBUG">
         <appender-ref ref="STDERR" />
     </root>
 </configuration>

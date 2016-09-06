@@ -30,26 +30,30 @@ class SimpleKafkaClient(connection: String) {
 
     // need to subscribe to the topic
 
-    consumer.subscribe(Seq(topic))
+    consumer.subscribe(topic)
 
     // and read the records back -- just keep polling until we have read
     // all of them (poll each 100 msec) as the Kafka server may not make
     // them available immediately
 
     var count = 0;
-
-    while (count < max) {
+    var pollCount = 0
+    while (count < max && pollCount < 100) {
       println("*** Polling ")
 
-      val records: ConsumerRecords[String, String] =
+      val records: java.util.Map[String, ConsumerRecords[String, String]] =
         consumer.poll(100)
-      println(s"*** received ${records.count} messages")
-      count = count + records.count
+      pollCount = pollCount + 1
+      if (records != null) {
+        println(s"*** received ${records.size()} messages")
 
-      // must specify the topic as we could have subscribed to more than one
-      records.records(topic).foreach(rec => {
-        println("[ " + rec.partition() + " ] " + rec.key() + ":" + rec.value())
-      })
+        count = count + records.size()
+
+        // must specify the topic as we could have subscribed to more than one
+        records.get(topic).records().foreach(rec => {
+          println("[ " + rec.partition() + " ] " + rec.key() + ":" + rec.value())
+        })
+      }
     }
 
     println("*** got the expected number of messages")
@@ -70,7 +74,9 @@ class SimpleKafkaClient(connection: String) {
     consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
     consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
     consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, connection)
-    consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+    consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "smallest")
+    consumerConfig.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY, "roundrobin")
+
     consumerConfig
   }
 }

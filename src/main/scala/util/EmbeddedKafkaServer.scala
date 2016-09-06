@@ -1,25 +1,51 @@
 package util
 
 import java.io.IOException
+import java.net.ServerSocket
 
 import info.batey.kafka.unit.KafkaUnit
+import kafka.admin.TopicCommand
+import org.slf4j.LoggerFactory
 
 /**
   * Use https://github.com/chbatey/kafka-unit to control an embedded Kafka instance.
   */
 @throws[IOException]
 class EmbeddedKafkaServer() {
-  private val kafkaServer = new KafkaUnit
+  private val LOGGER = LoggerFactory.getLogger(classOf[EmbeddedKafkaServer])
+  //private val zkPort = getEphemeralPort
+  //private val kbPort = getEphemeralPort
+  private val zkPort = 39001
+  private val kbPort = 39002
 
-  def createTopic(topic: String, partitions: Int = 1) {
-    kafkaServer.createTopic(topic, partitions)
+  private val kafkaServer = new KafkaUnit(zkPort, kbPort)
+
+  private def getEphemeralPort : Int = {
+    val socket: ServerSocket = new ServerSocket(0)
+    socket.getLocalPort
   }
 
-  def getKafkaConnect: String = kafkaServer.getKafkaConnect
+  def createTopic(topic: String, partitions: Int = 1) {
+    val arguments = Array[String](
+        "--create",
+        "--zookeeper",
+        getZkConnect,
+        "--replication-factor",
+        "1",
+        "--partitions",
+        "" + partitions,
+        "--topic",
+        topic
+      )
+    TopicCommand.main(arguments)
+  }
 
-  def getZkConnect: String = "localhost:" + kafkaServer.getZkPort
+  def getKafkaConnect: String = "localhost:" + kbPort
+
+  def getZkConnect: String = "localhost:" + zkPort
 
   def start() {
+    LOGGER.info("starting on [{} {}]", zkPort, kbPort)
     kafkaServer.startup()
   }
 
