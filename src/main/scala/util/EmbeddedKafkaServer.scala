@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory
 @throws[IOException]
 class EmbeddedKafkaServer() {
   private val LOGGER = LoggerFactory.getLogger(classOf[EmbeddedKafkaServer])
-  //private val zkPort = getEphemeralPort
-  //private val kbPort = getEphemeralPort
   val zkPort = 39001
   val kbPort = 39002
 

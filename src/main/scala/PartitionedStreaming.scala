@@ -7,7 +7,8 @@ import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * NOTE: this won't work until Spark 2.1.0 comes along.
+  * By calling createDirectStream we can get the generated RDDs to have a
+  * number of partitions (in this case 6) dictated by the partitioning of the topic.
   */
 object PartitionedStreaming {
 
@@ -22,7 +23,7 @@ object PartitionedStreaming {
 
     // put some data in an RDD and publish to Kafka
     val numbers = 1 to max
-    val numbersRDD = sc.parallelize(numbers, 4)
+    val numbersRDD = sc.parallelize(numbers, 5)
 
     val kafkaSink = sc.broadcast(SparkKafkaSink(config))
 
@@ -39,11 +40,11 @@ object PartitionedStreaming {
 
     val kafkaServer = new EmbeddedKafkaServer()
     kafkaServer.start()
-    kafkaServer.createTopic(topic, 4)
+    kafkaServer.createTopic(topic, 6)
 
 
 
-    val conf = new SparkConf().setAppName("PartitionedStreaming").setMaster("local[4]")
+    val conf = new SparkConf().setAppName("PartitionedStreaming").setMaster("local[7]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second
