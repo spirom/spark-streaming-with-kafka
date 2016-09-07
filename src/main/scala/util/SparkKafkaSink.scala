@@ -14,8 +14,27 @@ class SparkKafkaSink(createProducer: () => KafkaProducer[String, String]) extend
 
   lazy val producer = createProducer()
 
+  /**
+    * Records assigned to partitions using the configured partitioner.
+    *
+    * @param topic
+    * @param key
+    * @param value
+    */
   def send(topic: String, key: String, value: String): Unit = {
     producer.send(new ProducerRecord(topic, key, value))
+  }
+
+  /**
+    * Records assigned to partitions explicitly, ignoring the configured partitioner.
+    *
+    * @param topic
+    * @param partition
+    * @param key
+    * @param value
+    */
+  def send(topic: String, partition: Int, key: String, value: String): Unit = {
+    producer.send(new ProducerRecord(topic, partition, key, value))
   }
 }
 
