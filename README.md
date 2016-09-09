@@ -21,16 +21,16 @@ behind this are documented in the Spark 2.1.0 documentation, which is not yet av
 
 | File                  | Purpose    |
 |---------------------------------|-----------------------|
-| util/EmbeddedKafkaServer.scala | Starting and stopping an embedded Kafka server and create topics. |
-| util/SimpleKafkaClient.scala | Directly connect to Kafka without using Spark. |
-| util/SparkKafkaSink.scala | Support for publishing to Kafka topic in parallel from Spark. |
+| [util/EmbeddedKafkaServer.scala](src/main/scala/util/EmbeddedKafkaServer.scala) | Starting and stopping an embedded Kafka server and create topics. |
+| [util/SimpleKafkaClient.scala](src/main/scala/util/SimpleKafkaClient.scala) | Directly connect to Kafka without using Spark. |
+| [util/SparkKafkaSink.scala](src/main/scala/util/SparkKafkaSink.scala) | Support for publishing to Kafka topic in parallel from Spark. |
 
 ## Examples
 
 | File                  | What's Illustrated    |
 |---------------------------------|-----------------------|
-| SimpleStreaming.scala | Simple way to set up streaming from a Kafka topic. |
-| PartitionedStreaming.scala | RDD partitioning is aware of Kafka topic partitioning. |
-| ControlledPartitioning.scala | When publishing to the topic, explicitly assign each record to a partition. |
-| MultipleConsumerGroups.scala | Two streams subscribing to the same topic via two consumer groups see all the same data. |
-| ExceptionPropagation.scala | Show how call to awaitTermination() throws propagated exceptions. |
+| [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala) | Simple way to set up streaming from a Kafka topic. |
+| [PartitionedStreaming.scala](src/main/scala/PartitionedStreaming.scala) | RDD partitioning is aware of Kafka topic partitioning. |
+| [ControlledPartitioning.scala](src/main/scala/ControlledPartitioning.scala) | When publishing to the topic, explicitly assign each record to a partition. |
+| [MultipleConsumerGroups.scala](src/main/scala/MultipleConsumerGroups.scala) | Two streams subscribing to the same topic via two consumer groups see all the same data. |
+| [ExceptionPropagation.scala](src/main/scala/ExceptionPropagation.scala) | Show how call to awaitTermination() throws propagated exceptions. |
