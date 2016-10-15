@@ -7,7 +7,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * Here the topic has six partitions but instead of writing top it using the configured
+  * Here the topic has six partitions but instead of writing to it using the configured
   * partitioner, we assign all records to the same partition explicitly. Although the
   * generated RDDs still have the same number of partitions as the topic, only one
   * partition has all the data in it.

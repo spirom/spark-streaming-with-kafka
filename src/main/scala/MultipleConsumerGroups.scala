@@ -9,7 +9,7 @@ import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
   * This example creates two streams based on two different consumer groups, so both streams
   * get a copy of the same data. It's simply a matter of specifying the two names of the
   * two different consumer groups in the two calls to createStream() -- no special
-  * configuration si needed.
+  * configuration is needed.
   */
 
 object MultipleConsumerGroups {

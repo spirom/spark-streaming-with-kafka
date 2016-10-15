@@ -10,8 +10,8 @@ import org.apache.spark.streaming.kafka.KafkaUtils
   * to process that topic, and publishes some data using the SparkKafkaSink.
   *
   * Notice there's quite a lot of waiting. It takes some time for streaming to get going,
-  * and data published too early tends to be missed by the stream. (No doubt,t his is partly
-  * because this example sues the simplest method to create the stream, and thus doesn't
+  * and data published too early tends to be missed by the stream. (No doubt, this is partly
+  * because this example uses the simplest method to create the stream, and thus doesn't
   * get an opportunity to set auto.offset.reset to "earliest".
   *
   * Also, data that is published takes some time to propagate to the stream.
