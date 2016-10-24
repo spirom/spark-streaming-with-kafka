@@ -42,6 +42,7 @@ object ExceptionPropagation {
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
       println("*** got an RDD, size = " + r.count())
+        // throw the custom exception here and see it get caught in the code below
         throw SomeException("error while processing RDD");
     })
 

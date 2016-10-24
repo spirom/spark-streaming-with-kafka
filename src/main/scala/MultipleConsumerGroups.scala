@@ -69,7 +69,7 @@ object MultipleConsumerGroups {
       r.foreach(s => println("*** [stream 1] " + s))
       if (r.count() > 0) {
         println("*** [stream 1] " + r.getNumPartitions + " partitions")
-        r.glom().foreach(a => println("*** [stream 1] gpartition size = " + a.size))
+        r.glom().foreach(a => println("*** [stream 1] partition size = " + a.size))
       }
     })
 

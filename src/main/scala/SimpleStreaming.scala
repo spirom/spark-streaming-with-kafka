@@ -38,6 +38,7 @@ object SimpleStreaming {
     println("*** producing data")
 
     numbersRDD.foreach { n =>
+      // notice the keys and values are strings, which is important when receiving them
       kafkaSink.value.send(topic, "key_" + n, "string_" + n)
     }
   }
@@ -58,13 +59,15 @@ object SimpleStreaming {
     // streams will produce data every second
     val ssc = new StreamingContext(sc, Seconds(1))
 
+    // this many messages
     val max = 1000
 
-    // only subscribing to one topic and all four partitions
+    // only subscribing to one topic and all four of its partitions
     val topicMap =
       Map[String, Int](topic -> 4)
-    // Create the stream. Group doesn't matter as there won't be other subscribers.
-    // Notice that the default is to assume the topic is receiving String keys and values.
+    // Create the stream. Group name doesn't matter as there won't be other subscribers.
+    // Notice that the default is to assume the topic is receiving String keys and values,
+    // which is what is being sent.
     val kafkaStream =
       KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "MyGroup", topicMap)
 
@@ -73,6 +76,9 @@ object SimpleStreaming {
       println("*** got an RDD, size = " + r.count())
       r.foreach(s => println(s))
       if (r.count() > 0) {
+        // let's see how many partitions the resulting RDD has -- notice that it has nothing
+        // to do with the number of partitions in the RDD used to publish the data (4), nor
+        // the number of partitions of the topic (which also happens to be four.)
         println("*** " + r.getNumPartitions + " partitions")
         r.glom().foreach(a => println("*** partition size = " + a.size))
       }
