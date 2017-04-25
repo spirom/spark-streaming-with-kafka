@@ -16,7 +16,7 @@ JDK 1.7, Scala 2.11.2, Kafka 0.8.2.1, kafka-unit 0.2 and Spark 2.1.0 on Ubuntu L
 It uses the package spark-streaming-kafka-0-8 for Spark Streaming integration with Kafka.
 This is to obtain access to the stable API -- the details
 behind this are explained in the
-[https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html](Spark 2.1.0 documentation).
+[Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
 ## Utilities
 
