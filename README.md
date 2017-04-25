@@ -10,12 +10,13 @@ code interacts with RDD partitioning in Spark and topic partitioning in Kafka.
 
 ## Dependencies
 
-The project was created with IntelliJ Idea 14 Community Edition,
-JDK 1.7, Scala 2.11.2, Kafka 0.8.2.1, kafka-unit 0.2 and Spark 2.0.0 on Ubuntu Linux.
+The project was created with IntelliJ Idea 14 Community Edition. It is known to work with
+JDK 1.7, Scala 2.11.2, Kafka 0.8.2.1, kafka-unit 0.2 and Spark 2.1.0 on Ubuntu Linux.
 
 It uses the package spark-streaming-kafka-0-8 for Spark Streaming integration with Kafka.
 This is to obtain access to the stable API -- the details
-behind this are documented in the Spark 2.1.0 documentation, which is not yet available.
+behind this are explained in the
+[https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html](Spark 2.1.0 documentation).
 
 ## Utilities
 
