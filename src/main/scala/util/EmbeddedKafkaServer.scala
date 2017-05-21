@@ -25,18 +25,9 @@ class EmbeddedKafkaServer() {
   }
 
   def createTopic(topic: String, partitions: Int = 1) {
-    val arguments = Array[String](
-        "--create",
-        "--zookeeper",
-        getZkConnect,
-        "--replication-factor",
-        "1",
-        "--partitions",
-        "" + partitions,
-        "--topic",
-        topic
-      )
-    TopicCommand.main(arguments)
+    LOGGER.debug("creating topic [$topic]")
+    kafkaServer.createTopic(topic)
+    LOGGER.debug("finished creating topic [$topic]")
   }
 
   def getKafkaConnect: String = "localhost:" + kbPort

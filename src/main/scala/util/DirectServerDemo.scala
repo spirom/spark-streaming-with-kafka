@@ -15,7 +15,7 @@ object DirectServerDemo {
 
     kafkaServer.createTopic(topic, 4)
 
-    println("*** topic [" + topic + "] vreated")
+    println("*** topic [" + topic + "] created")
 
     Thread.sleep(5000)
 
