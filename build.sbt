@@ -18,8 +18,6 @@ libraryDependencies += "org.apache.kafka" % "kafka-clients" % "0.10.2.0"
 
 libraryDependencies += "info.batey.kafka" % "kafka-unit" % "0.6"
 
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.7"
-
 libraryDependencies += "net.sf.jopt-simple" % "jopt-simple" % "5.0.2"
 
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
