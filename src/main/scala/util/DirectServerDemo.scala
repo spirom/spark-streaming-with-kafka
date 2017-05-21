@@ -38,7 +38,6 @@ object DirectServerDemo {
     println("*** about to consume messages")
 
     kafkaClient.consumeAndPrint(
-      kafkaClient.getBasicStringStringConsumer,
       topic,
       5)
 

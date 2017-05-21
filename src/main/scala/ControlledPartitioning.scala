@@ -90,7 +90,7 @@ object ControlledPartitioning {
       override def run() {
         val client = new SimpleKafkaClient(kafkaServer)
 
-        send(max, sc, topic, client.getBasicStringStringProducer)
+        send(max, sc, topic, client.basicStringStringProducer)
         Thread.sleep(5000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)

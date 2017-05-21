@@ -1,9 +1,12 @@
 import java.util.Properties
+import java.util.Arrays
 
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
+import java.util
+
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 
 /**
@@ -79,10 +82,18 @@ object SimpleStreaming {
     // Create the stream. Group name doesn't matter as there won't be other subscribers.
     // Notice that the default is to assume the topic is receiving String keys and values,
     // which is what is being sent.
+    val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
+
     val kafkaStream =
-      KafkaUtils.createDirectStream(ssc,
+      KafkaUtils.createDirectStream(
+        ssc,
         LocationStrategies.PreferConsistent,
-        ConsumerStrategies.Subscribe[String, String](Seq(topic), kafkaParams))
+        ConsumerStrategies.Subscribe[String, String](
+          Arrays.asList(topic),
+          props.asInstanceOf[java.util.Map[String, Object]]
+        )
+
+      )
 
     //, "MyGroup", topicMap)
 
@@ -110,7 +121,7 @@ object SimpleStreaming {
       override def run() {
         val client = new SimpleKafkaClient(kafkaServer)
 
-        send(max, sc, topic, client.getBasicStringStringProducer)
+        send(max, sc, topic, client.basicStringStringProducer)
         Thread.sleep(5000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)

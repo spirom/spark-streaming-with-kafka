@@ -15,7 +15,7 @@ import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializ
 class SimpleKafkaClient(server: EmbeddedKafkaServer) {
 
   def send(topic: String, pairs: Seq[(String, String)]) : Unit = {
-    val producer = new KafkaProducer[String, String](getBasicStringStringProducer)
+    val producer = new KafkaProducer[String, String](basicStringStringProducer)
     pairs.foreach(pair => {
       producer send(new ProducerRecord(topic, pair._1, pair._2))
     })
@@ -25,15 +25,14 @@ class SimpleKafkaClient(server: EmbeddedKafkaServer) {
   /**
     * Read and print the specified number of records from the specified topic.
     * Poll for as long as necessary.
-    * @param config
     * @param topic
     * @param max
     */
-  def consumeAndPrint(config: Properties, topic: String, max: Int): Unit = {
+  def consumeAndPrint(topic: String, max: Int): Unit = {
     // configure a consumer
 
 
-    val consumer = new KafkaConsumer[String, String](config);
+    val consumer = new KafkaConsumer[String, String](basicStringStringConsumer);
 
     // need to subscribe to the topic
 
@@ -64,7 +63,7 @@ class SimpleKafkaClient(server: EmbeddedKafkaServer) {
     consumer.close()
   }
 
-  def getBasicStringStringProducer : Properties = {
+  def basicStringStringProducer : Properties = {
     val config: Properties = new Properties
     config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
     config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, classOf[StringSerializer].getCanonicalName)
@@ -73,7 +72,14 @@ class SimpleKafkaClient(server: EmbeddedKafkaServer) {
     config
   }
 
-  def getBasicStringStringConsumer : Properties = {
+  def basicStringStringConsumer : Properties = {
+    SimpleKafkaClient.getBasicStringStringConsumer(server)
+  }
+}
+
+object SimpleKafkaClient {
+
+  def getBasicStringStringConsumer(server: EmbeddedKafkaServer) : Properties = {
     val consumerConfig: Properties = new Properties
     consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "MyGroup")
     consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
@@ -85,4 +91,5 @@ class SimpleKafkaClient(server: EmbeddedKafkaServer) {
 
     consumerConfig
   }
+
 }
