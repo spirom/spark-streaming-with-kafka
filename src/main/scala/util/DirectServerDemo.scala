@@ -1,5 +1,10 @@
 package util
 
+/**
+  * Run this first to verify that the embedded Kafka setup is working for you.
+  * It starts an embedded Kafka server, creates a topic, publishes some messages,
+  * reads them back and shuts down the embedded server.
+  */
 
 object DirectServerDemo {
   def main (args: Array[String]) {
