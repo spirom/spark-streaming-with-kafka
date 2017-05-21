@@ -23,9 +23,9 @@ behind this are explained in the
 I'm trying to get these working on the [kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
 that branch back to master until the new APIs become mainstream, which
 probably won't be anytime soon. Only the
-[util/DirectServerDemo.scala](src/main/scala/util/DirectServerDemo.scala)
+[util/DirectServerDemo.scala](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10/src/main/scala/util/DirectServerDemo.scala)
 sanity check and the
-[SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala)
+[SimpleStreaming.scala](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10/src/main/scala/SimpleStreaming.scala)
 example work right now.
 
 Again, the details are explained in the
