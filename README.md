@@ -18,7 +18,7 @@ This is to obtain access to the stable API -- the details
 behind this are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
-## _Note:_ Using Experimental Kafka 0.10.0 APIs
+## _Note:_ Using The Experimental Kafka 0.10.0 APIs
 
 I'm trying to get these working on the [kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
 that branch back to master until the new APIs become mainstream, which
@@ -27,6 +27,10 @@ probably won't be anytime soon. Only the
 sanity check and the
 [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala)
 example work right now.
+
+Again,t he details are explained in the
+[Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
+
 
 ## Utilities
 
