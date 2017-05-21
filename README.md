@@ -18,10 +18,21 @@ This is to obtain access to the stable API -- the details
 behind this are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
+## Using Experimental Kafka 0.10.0 APIs
+
+I'm trying to get these working on the [tree/kafka0.10](kafka0.10) branch, and probably won't merge
+that branch back to master until the new APIs become mainstream, which
+probably won't be anytime soon. Only the
+[util/DirectServerDemo.scala](src/main/scala/util/DirectServerDemo.scala)
+sanity check and the
+[SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala)
+example work right now.
+
 ## Utilities
 
 | File                  | Purpose    |
 |---------------------------------|-----------------------|
+| [util/DirectServerDemo.scala](src/main/scala/util/DirectServerDemo.scala) | **Run this first as a Spark-free sanity check for embedded server and clients.** |
 | [util/EmbeddedKafkaServer.scala](src/main/scala/util/EmbeddedKafkaServer.scala) | Starting and stopping an embedded Kafka server and create topics. |
 | [util/SimpleKafkaClient.scala](src/main/scala/util/SimpleKafkaClient.scala) | Directly connect to Kafka without using Spark. |
 | [util/SparkKafkaSink.scala](src/main/scala/util/SparkKafkaSink.scala) | Support for publishing to Kafka topic in parallel from Spark. |
@@ -30,7 +41,7 @@ behind this are explained in the
 
 | File                  | What's Illustrated    |
 |---------------------------------|-----------------------|
-| [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala) | Simple way to set up streaming from a Kafka topic. |
+| [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala) | **Simple way to set up streaming from a Kafka topic.** |
 | [PartitionedStreaming.scala](src/main/scala/PartitionedStreaming.scala) | RDD partitioning is aware of Kafka topic partitioning. |
 | [ControlledPartitioning.scala](src/main/scala/ControlledPartitioning.scala) | When publishing to the topic, explicitly assign each record to a partition. |
 | [MultipleConsumerGroups.scala](src/main/scala/MultipleConsumerGroups.scala) | Two streams subscribing to the same topic via two consumer groups see all the same data. |
