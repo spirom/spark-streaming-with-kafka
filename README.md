@@ -28,7 +28,7 @@ sanity check and the
 [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala)
 example work right now.
 
-Again,t he details are explained in the
+Again, the details are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
 
