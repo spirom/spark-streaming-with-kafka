@@ -1,6 +1,6 @@
 import java.util.Properties
 
-import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
@@ -60,6 +60,7 @@ object MultipleConsumerGroups {
     // the first stream subscribes to consumer group Group1
     //
 
+    /*******************
     val kafkaStream1 =
       KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "Group1", topicMap)
 
@@ -88,6 +89,7 @@ object MultipleConsumerGroups {
         r.glom().foreach(a => println("*** [stream 2] partition size = " + a.size))
       }
     })
+      *******************/
 
     ssc.start()
 

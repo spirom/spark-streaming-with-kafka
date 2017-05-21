@@ -3,16 +3,17 @@ package util
 import java.io.IOException
 import java.net.ServerSocket
 
+import com.typesafe.scalalogging.Logger
 import info.batey.kafka.unit.KafkaUnit
 import kafka.admin.TopicCommand
-import org.slf4j.LoggerFactory
+
 
 /**
   * Use https://github.com/chbatey/kafka-unit to control an embedded Kafka instance.
   */
 @throws[IOException]
 class EmbeddedKafkaServer() {
-  private val LOGGER = LoggerFactory.getLogger(classOf[EmbeddedKafkaServer])
+  private val LOGGER = Logger[EmbeddedKafkaServer]
   val zkPort = 39001
   val kbPort = 39002
 
@@ -43,7 +44,7 @@ class EmbeddedKafkaServer() {
   def getZkConnect: String = "localhost:" + zkPort
 
   def start() {
-    LOGGER.info("starting on [{} {}]", zkPort, kbPort)
+    LOGGER.info("starting on [$zkPort $kbPort]")
     kafkaServer.startup()
   }
 

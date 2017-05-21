@@ -1,4 +1,4 @@
-import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{SimpleKafkaClient, EmbeddedKafkaServer}
@@ -36,6 +36,8 @@ object ExceptionPropagation {
     Map[String, Int](topic -> 4)
     // Create the stream. Group doesn't matter as there won't be other subscribers.
     // Notice that the default is to assume the topic is receiving String keys and values.
+
+    /************
     val kafkaStream =
     KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "MyGroup", topicMap)
 
@@ -45,6 +47,7 @@ object ExceptionPropagation {
         // throw the custom exception here and see it get caught in the code below
         throw SomeException("error while processing RDD");
     })
+      ***************/
 
     ssc.start()
 

@@ -1,7 +1,7 @@
 import java.util.Properties
 
 import kafka.serializer.StringDecoder
-import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.kafka010.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
@@ -58,6 +58,8 @@ object PartitionedStreaming {
       "metadata.broker.list" -> kafkaServer.getKafkaConnect,
       "auto.offset.reset" -> "smallest"
     )
+
+    /*************
     val kafkaStream =
       KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
         ssc, kafkaParams, Set(topic))
@@ -71,6 +73,7 @@ object PartitionedStreaming {
         r.glom().foreach(a => println("*** partition size = " + a.size))
       }
     })
+      ****************/
 
     ssc.start()
 

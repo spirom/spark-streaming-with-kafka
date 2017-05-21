@@ -1,9 +1,10 @@
 import java.util.Properties
 
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{SimpleKafkaClient, EmbeddedKafkaServer, SparkKafkaSink}
-import org.apache.spark.streaming.kafka.KafkaUtils
+import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 
 /**
   * The most basic streaming example: starts a Kafka server, creates a topic, creates a stream
@@ -65,11 +66,25 @@ object SimpleStreaming {
     // only subscribing to one topic and all four of its partitions
     val topicMap =
       Map[String, Int](topic -> 4)
+
+    val kafkaParams = Map[String, Object](
+      "bootstrap.servers" -> kafkaServer.getKafkaConnect,
+      "key.deserializer" -> classOf[StringDeserializer],
+      "value.deserializer" -> classOf[StringDeserializer],
+      "group.id" -> "MyGroup",
+      "auto.offset.reset" -> "latest",
+      "enable.auto.commit" -> (false: java.lang.Boolean)
+    )
+
     // Create the stream. Group name doesn't matter as there won't be other subscribers.
     // Notice that the default is to assume the topic is receiving String keys and values,
     // which is what is being sent.
     val kafkaStream =
-      KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "MyGroup", topicMap)
+      KafkaUtils.createDirectStream(ssc,
+        LocationStrategies.PreferConsistent,
+        ConsumerStrategies.Subscribe[String, String](Seq(topic), kafkaParams))
+
+    //, "MyGroup", topicMap)
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {

@@ -28,7 +28,7 @@ class SimpleKafkaClient(server: EmbeddedKafkaServer) {
     consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
     consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, server.getKafkaConnect)
     consumerConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "smallest")
-    consumerConfig.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY, "roundrobin")
+    //consumerConfig.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY, "roundrobin")
 
     consumerConfig
   }
