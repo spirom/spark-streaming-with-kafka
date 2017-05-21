@@ -110,7 +110,7 @@ object SimpleStreaming {
       override def run() {
         val client = new SimpleKafkaClient(kafkaServer)
 
-        send(max, sc, topic, client.getBasicStringStringProducer(kafkaServer))
+        send(max, sc, topic, client.getBasicStringStringProducer)
         Thread.sleep(5000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)

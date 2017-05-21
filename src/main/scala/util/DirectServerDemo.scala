@@ -19,6 +19,29 @@ object DirectServerDemo {
 
     Thread.sleep(5000)
 
+    val kafkaClient = new SimpleKafkaClient(kafkaServer)
+
+    println("*** about to produce messages")
+
+    kafkaClient.send(topic, Seq(
+      ("Key_1", "Value_1"),
+      ("Key_2", "Value_2"),
+      ("Key_3", "Value_3"),
+      ("Key_4", "Value_4"),
+      ("Key_5", "Value_5")
+    ))
+
+    println("*** produced messages")
+
+    Thread.sleep(5000)
+
+    println("*** about to consume messages")
+
+    kafkaClient.consumeAndPrint(
+      kafkaClient.getBasicStringStringConsumer,
+      topic,
+      5)
+
     println("*** stopping embedded Kafka server")
 
     kafkaServer.stop()
