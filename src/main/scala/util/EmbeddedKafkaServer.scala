@@ -26,7 +26,7 @@ class EmbeddedKafkaServer() {
 
   def createTopic(topic: String, partitions: Int = 1) {
     LOGGER.debug("creating topic [$topic]")
-    kafkaServer.createTopic(topic)
+    kafkaServer.createTopic(topic, partitions)
     LOGGER.debug("finished creating topic [$topic]")
   }
 
