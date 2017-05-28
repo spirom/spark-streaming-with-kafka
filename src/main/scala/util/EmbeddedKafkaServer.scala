@@ -5,7 +5,6 @@ import java.net.ServerSocket
 
 import com.typesafe.scalalogging.Logger
 import info.batey.kafka.unit.KafkaUnit
-import kafka.admin.TopicCommand
 
 
 /**
@@ -25,9 +24,9 @@ class EmbeddedKafkaServer() {
   }
 
   def createTopic(topic: String, partitions: Int = 1) {
-    LOGGER.debug("creating topic [$topic]")
+    LOGGER.debug(s"creating topic [$topic]")
     kafkaServer.createTopic(topic, partitions)
-    LOGGER.debug("finished creating topic [$topic]")
+    LOGGER.debug(s"finished creating topic [$topic]")
   }
 
   def getKafkaConnect: String = "localhost:" + kbPort
@@ -35,7 +34,7 @@ class EmbeddedKafkaServer() {
   def getZkConnect: String = "localhost:" + zkPort
 
   def start() {
-    LOGGER.info("starting on [$zkPort $kbPort]")
+    LOGGER.info(s"starting on [$zkPort $kbPort]")
     kafkaServer.startup()
   }
 
