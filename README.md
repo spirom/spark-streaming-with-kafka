@@ -20,13 +20,10 @@ behind this are explained in the
 
 ## _Note:_ Using The Experimental Kafka 0.10.0 APIs
 
-I'm trying to get these working on the [kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
+I'm exploring the new experimental APIs based on Kafka 0.10 on the
+[kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
 that branch back to master until the new APIs become mainstream, which
-probably won't be anytime soon. Only the
-[util/DirectServerDemo.scala](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10/src/main/scala/util/DirectServerDemo.scala)
-sanity check and the
-[SimpleStreaming.scala](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10/src/main/scala/SimpleStreaming.scala)
-example work right now.
+probably won't be anytime soon. The functional differences are causing me to reorganize the examples on that branch somewhat.
 
 Again, the details are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
