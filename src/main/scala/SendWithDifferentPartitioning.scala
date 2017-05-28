@@ -1,16 +1,19 @@
-import java.util.Properties
+import java.util.{Arrays, Properties}
 
 import kafka.serializer.StringDecoder
-import org.apache.spark.streaming.kafka010.KafkaUtils
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * By calling createDirectStream we can get the generated RDDs to have a
-  * number of partitions (in this case 6) dictated by the partitioning of the topic.
+  * This example is very similar to SimpleStreaming, except that the data is sent
+  * from an RDD with 5 partitions to a Kafka topic with 6 partitions. WThe KafkaStream consuming
+  * the topic produces RDDs with size partitions. This is because the data is repartitioned when sent,
+  * as we continue use the KafkaProducer constructor overload that doesn't allow us to specify
+  * the destination partition.
   */
-object PartitionedStreaming {
+object SendWithDifferentPartitioning {
 
   /**
     * Publish some data to a topic. Encapsulated here to ensure serializability.
@@ -30,6 +33,10 @@ object PartitionedStreaming {
     println("*** producing data")
 
     numbersRDD.foreach { n =>
+      // NOTE:
+      //     1) the keys and values are strings, which is important when receiving them
+      //     2) We don't specify which Kafka partition to send to, so a hash of the key
+      //        is used to determine this
       kafkaSink.value.send(topic, "key_" + n, "string_" + n)
     }
   }
@@ -52,28 +59,31 @@ object PartitionedStreaming {
 
     val max = 1000
 
-    // Create the stream. Group doesn't matter as there won't be other subscribers.
-    // Notice that the default is to assume the topic is receiving String keys and values.
-    val kafkaParams = Map(
-      "metadata.broker.list" -> kafkaServer.getKafkaConnect,
-      "auto.offset.reset" -> "smallest"
-    )
+    val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
-    /*************
     val kafkaStream =
-      KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
-        ssc, kafkaParams, Set(topic))
+      KafkaUtils.createDirectStream(
+        ssc,
+        LocationStrategies.PreferConsistent,
+        ConsumerStrategies.Subscribe[String, String](
+          Arrays.asList(topic),
+          props.asInstanceOf[java.util.Map[String, Object]]
+        )
+
+      )
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
       println("*** got an RDD, size = " + r.count())
       r.foreach(s => println(s))
       if (r.count() > 0) {
+        // let's see how many partitions the resulting RDD has -- notice that it has nothing
+        // to do with the number of partitions in the RDD used to publish the data (4), nor
+        // the number of partitions of the topic (which also happens to be four.)
         println("*** " + r.getNumPartitions + " partitions")
         r.glom().foreach(a => println("*** partition size = " + a.size))
       }
     })
-      ****************/
 
     ssc.start()
 

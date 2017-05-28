@@ -7,6 +7,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 import java.util
 
+import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 
 /**
@@ -42,7 +43,10 @@ object SimpleStreaming {
     println("*** producing data")
 
     numbersRDD.foreach { n =>
-      // notice the keys and values are strings, which is important when receiving them
+      // NOTE:
+      //     1) the keys and values are strings, which is important when receiving them
+      //     2) We don't specify which Kafka partition to send to, so a hash of the key
+      //        is used to determine this
       kafkaSink.value.send(topic, "key_" + n, "string_" + n)
     }
   }
@@ -66,22 +70,7 @@ object SimpleStreaming {
     // this many messages
     val max = 1000
 
-    // only subscribing to one topic and all four of its partitions
-    val topicMap =
-      Map[String, Int](topic -> 4)
-
-    val kafkaParams = Map[String, Object](
-      "bootstrap.servers" -> kafkaServer.getKafkaConnect,
-      "key.deserializer" -> classOf[StringDeserializer],
-      "value.deserializer" -> classOf[StringDeserializer],
-      "group.id" -> "MyGroup",
-      "auto.offset.reset" -> "latest",
-      "enable.auto.commit" -> (false: java.lang.Boolean)
-    )
-
-    // Create the stream. Group name doesn't matter as there won't be other subscribers.
-    // Notice that the default is to assume the topic is receiving String keys and values,
-    // which is what is being sent.
+    // Create the stream.
     val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
     val kafkaStream =
@@ -94,8 +83,6 @@ object SimpleStreaming {
         )
 
       )
-
-    //, "MyGroup", topicMap)
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
@@ -122,6 +109,7 @@ object SimpleStreaming {
         val client = new SimpleKafkaClient(kafkaServer)
 
         send(max, sc, topic, client.basicStringStringProducer)
+
         Thread.sleep(5000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)

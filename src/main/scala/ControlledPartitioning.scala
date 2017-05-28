@@ -1,7 +1,7 @@
-import java.util.Properties
+import java.util.{Arrays, Properties}
 
 import kafka.serializer.StringDecoder
-import org.apache.spark.streaming.kafka010.KafkaUtils
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
@@ -10,7 +10,8 @@ import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
   * Here the topic has six partitions but instead of writing to it using the configured
   * partitioner, we assign all records to the same partition explicitly. Although the
   * generated RDDs still have the same number of partitions as the topic, only one
-  * partition has all the data in it.
+  * partition has all the data in it. THis is a rather extreme way to use topic partitions,
+  * but it opens up the whole range of algorithms for selecting the partition when sending.
   */
 object ControlledPartitioning {
 
@@ -55,29 +56,31 @@ object ControlledPartitioning {
 
     val max = 1000
 
-    // Create the stream. Group doesn't matter as there won't be other subscribers.
-    // Notice that the default is to assume the topic is receiving String keys and values.
-    val kafkaParams = Map(
-      "metadata.broker.list" -> kafkaServer.getKafkaConnect,
-      "auto.offset.reset" -> "smallest"
-    )
+    val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
-
-    /*********
     val kafkaStream =
-      KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
-        ssc, kafkaParams, Set(topic))
+      KafkaUtils.createDirectStream(
+        ssc,
+        LocationStrategies.PreferConsistent,
+        ConsumerStrategies.Subscribe[String, String](
+          Arrays.asList(topic),
+          props.asInstanceOf[java.util.Map[String, Object]]
+        )
+
+      )
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
       println("*** got an RDD, size = " + r.count())
       r.foreach(s => println(s))
       if (r.count() > 0) {
+        // let's see how many partitions the resulting RDD has -- notice that it has nothing
+        // to do with the number of partitions in the RDD used to publish the data (4), nor
+        // the number of partitions of the topic (which also happens to be four.)
         println("*** " + r.getNumPartitions + " partitions")
         r.glom().foreach(a => println("*** partition size = " + a.size))
       }
     })
-      *********/
 
     ssc.start()
 

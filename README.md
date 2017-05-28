@@ -20,13 +20,10 @@ behind this are explained in the
 
 ## Using the Experimental Kafka 0.10.0 APIs
 
-I'm trying to get these working on the [kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
+I'm exploring the new experimental APIs based on Kafka 0.10 on the
+[kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
 that branch back to master until the new APIs become mainstream, which
-probably won't be anytime soon. Only the
-[util/DirectServerDemo.scala](src/main/scala/util/DirectServerDemo.scala)
-sanity check and the
-[SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala)
-example work right now.
+probably won't be anytime soon. The functional differences are causing me to reorganize the examples somewhat.
 
 Again, the details are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
@@ -41,12 +38,30 @@ Again, the details are explained in the
 | [util/SimpleKafkaClient.scala](src/main/scala/util/SimpleKafkaClient.scala) | Directly connect to Kafka without using Spark. |
 | [util/SparkKafkaSink.scala](src/main/scala/util/SparkKafkaSink.scala) | Support for publishing to Kafka topic in parallel from Spark. |
 
-## Examples
+## Basic Examples
 
 | File                  | What's Illustrated    |
 |---------------------------------|-----------------------|
 | [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala) | **Simple way to set up streaming from a Kafka topic.** |
-| [PartitionedStreaming.scala](src/main/scala/PartitionedStreaming.scala) | RDD partitioning is aware of Kafka topic partitioning. |
-| [ControlledPartitioning.scala](src/main/scala/ControlledPartitioning.scala) | When publishing to the topic, explicitly assign each record to a partition. |
-| [MultipleConsumerGroups.scala](src/main/scala/MultipleConsumerGroups.scala) | Two streams subscribing to the same topic via two consumer groups see all the same data. |
 | [ExceptionPropagation.scala](src/main/scala/ExceptionPropagation.scala) | Show how call to awaitTermination() throws propagated exceptions. |
+
+## Partitioning Examples
+
+Partitioning is an important factor in determining the scalability oif Kafka-based streaming applications.
+In this set of examples you can see the relationship between a number of facets of partitioning.
+* The number of partitions in the RDD that is being published to a topic
+* The number of partitions of the topic itself (usually specified at topic creation)
+* THe number of partitions in the RDDs created by the Kafka stream
+* Whether and how messages move between partitions when they are transferred
+
+
+| File                  | What's Illustrated    |
+|---------------------------------|-----------------------|
+| [SendWithDifferentPartitioning.scala](src/main/scala/SendWithDifferentPartitioning.scala) | Send to a topic with different number of partitions. |
+| [ControlledPartitioning.scala](src/main/scala/ControlledPartitioning.scala) | When publishing to the topic, explicitly assign each record to a partition. |
+
+## Other Examples
+
+| File                  | What's Illustrated    |
+|---------------------------------|-----------------------|
+| [MultipleConsumerGroups.scala](src/main/scala/MultipleConsumerGroups.scala) | Two streams subscribing to the same topic via two consumer groups see all the same data. |

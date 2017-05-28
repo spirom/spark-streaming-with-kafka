@@ -1,6 +1,6 @@
-import java.util.Properties
+import java.util.{Arrays, Properties}
 
-import org.apache.spark.streaming.kafka010.KafkaUtils
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
@@ -52,19 +52,24 @@ object MultipleConsumerGroups {
 
     val max = 1000
 
-    // only subscribing to one topic and all four partitions
-    val topicMap =
-      Map[String, Int](topic -> 4)
 
     //
     // the first stream subscribes to consumer group Group1
     //
 
-    /*******************
-    val kafkaStream1 =
-      KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "Group1", topicMap)
+    val props1: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer, "Group1")
 
-    // now, whenever this Kafka stream produces data the resulting RDD will be printed
+    val kafkaStream1 =
+    KafkaUtils.createDirectStream(
+      ssc,
+      LocationStrategies.PreferConsistent,
+      ConsumerStrategies.Subscribe[String, String](
+        Arrays.asList(topic),
+        props1.asInstanceOf[java.util.Map[String, Object]]
+      )
+
+    )
+
     kafkaStream1.foreachRDD(r => {
       println("*** [stream 1] got an RDD, size = " + r.count())
       r.foreach(s => println("*** [stream 1] " + s))
@@ -79,8 +84,19 @@ object MultipleConsumerGroups {
     // see all of the same data
     //
 
+    val props2: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer, "Group1")
+
     val kafkaStream2 =
-      KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "Group2", topicMap)
+      KafkaUtils.createDirectStream(
+        ssc,
+        LocationStrategies.PreferConsistent,
+        ConsumerStrategies.Subscribe[String, String](
+          Arrays.asList(topic),
+          props2.asInstanceOf[java.util.Map[String, Object]]
+        )
+
+      )
+
     kafkaStream2.foreachRDD(r => {
       println("*** [stream 2] got an RDD, size = " + r.count())
       r.foreach(s => println("*** [stream 2] " + s))
@@ -89,7 +105,6 @@ object MultipleConsumerGroups {
         r.glom().foreach(a => println("*** [stream 2] partition size = " + a.size))
       }
     })
-      *******************/
 
     ssc.start()
 

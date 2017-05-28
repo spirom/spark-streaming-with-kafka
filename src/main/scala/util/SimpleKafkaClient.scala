@@ -79,9 +79,9 @@ class SimpleKafkaClient(server: EmbeddedKafkaServer) {
 
 object SimpleKafkaClient {
 
-  def getBasicStringStringConsumer(server: EmbeddedKafkaServer) : Properties = {
+  def getBasicStringStringConsumer(server: EmbeddedKafkaServer, group:String = "MyGroup") : Properties = {
     val consumerConfig: Properties = new Properties
-    consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "MyGroup")
+    consumerConfig.put(ConsumerConfig.GROUP_ID_CONFIG, group)
     consumerConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
     consumerConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getCanonicalName)
     consumerConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, server.getKafkaConnect)

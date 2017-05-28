@@ -1,7 +1,9 @@
-import org.apache.spark.streaming.kafka010.KafkaUtils
+import java.util.{Arrays, Properties}
+
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{SimpleKafkaClient, EmbeddedKafkaServer}
+import util.{EmbeddedKafkaServer, SimpleKafkaClient}
 
 /**
   * This example demonstrates that exceptions encountered in stream processing are
@@ -31,23 +33,25 @@ object ExceptionPropagation {
 
     val max = 10
 
-    // only subscribing to one topic and all four partitions
-    val topicMap =
-    Map[String, Int](topic -> 4)
-    // Create the stream. Group doesn't matter as there won't be other subscribers.
-    // Notice that the default is to assume the topic is receiving String keys and values.
+    val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
-    /************
     val kafkaStream =
-    KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "MyGroup", topicMap)
+      KafkaUtils.createDirectStream(
+        ssc,
+        LocationStrategies.PreferConsistent,
+        ConsumerStrategies.Subscribe[String, String](
+          Arrays.asList(topic),
+          props.asInstanceOf[java.util.Map[String, Object]]
+        )
+
+      )
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
       println("*** got an RDD, size = " + r.count())
-        // throw the custom exception here and see it get caught in the code below
-        throw SomeException("error while processing RDD");
+      // throw the custom exception here and see it get caught in the code below
+      throw SomeException("error while processing RDD");
     })
-      ***************/
 
     ssc.start()
 
