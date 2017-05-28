@@ -31,19 +31,39 @@ Again, the details are explained in the
 
 ## Utilities
 
-| File                  | Purpose    |
-|---------------------------------|-----------------------|
-| [util/DirectServerDemo.scala](src/main/scala/util/DirectServerDemo.scala) | **Run this first as a Spark-free sanity check for embedded server and clients.** |
-| [util/EmbeddedKafkaServer.scala](src/main/scala/util/EmbeddedKafkaServer.scala) | Starting and stopping an embedded Kafka server and create topics. |
-| [util/SimpleKafkaClient.scala](src/main/scala/util/SimpleKafkaClient.scala) | Directly connect to Kafka without using Spark. |
-| [util/SparkKafkaSink.scala](src/main/scala/util/SparkKafkaSink.scala) | Support for publishing to Kafka topic in parallel from Spark. |
+<table>
+<tr><th>File</th><th>Purpose</th></tr>
+<tr>
+<td><a href="src/main/scala/util/DirectServerDemo.scala">util/DirectServerDemo.scala</a></td>
+<td><b>Run this first as a Spark-free sanity check for embedded server and clients.</b></td>
+</tr>
+<tr>
+<td><a href="src/main/scala/util/EmbeddedKafkaServer.scala">util/EmbeddedKafkaServer.scala</a></td>
+<td>Starting and stopping an embedded Kafka server and create topics.</td>
+</tr>
+<tr>
+<td><a href="src/main/scala/util/SimpleKafkaClient.scala">util/SimpleKafkaClient.scala</a></td>
+<td>Directly connect to Kafka without using Spark.</td>
+</tr>
+<tr>
+<td><a href="src/main/scala/util/SparkKafkaSink.scala">util/SparkKafkaSink.scala</a></td>
+<td>Support for publishing to Kafka topic in parallel from Spark.</td>
+</tr>
+</table>
 
 ## Basic Examples
 
-| File                  | What's Illustrated    |
-|---------------------------------|-----------------------|
-| [SimpleStreaming.scala](src/main/scala/SimpleStreaming.scala) | **Simple way to set up streaming from a Kafka topic.** While this program also publishes to the topic, the publishing does not involve Spark |
-| [ExceptionPropagation.scala](src/main/scala/ExceptionPropagation.scala) | Show how call to awaitTermination() throws propagated exceptions. |
+<table>
+<tr><th>File</th><th>What's Illustrated</th></tr>
+<tr>
+<td><a href="src/main/scala/SimpleStreaming.scala">SimpleStreaming.scala</a></td>
+<td><b>Simple way to set up streaming from a Kafka topic.</b> While this program also publishes to the topic, the publishing does not involve Spark</td>
+</tr>
+<tr>
+<td><a href="src/main/scala/ExceptionPropagation.scala">ExceptionPropagation.scala</a></td>
+<td>Show how call to awaitTermination() throws propagated exceptions.</td>
+</tr>
+</table>
 
 ## Partitioning Examples
 
@@ -69,11 +89,21 @@ Perhaps surprisingly, this is not completely straightforward, and relies on [uti
 An alternative approach to this can be found [here](https://docs.cloud.databricks.com/docs/latest/databricks_guide/07%20Spark%20Streaming/09%20Write%20Output%20To%20Kafka.html).
 
 
-| File                  | What's Illustrated    |
-|---------------------------------|-----------------------|
-| [SimpleStreamingFromRDD.scala](src/main/scala/SimpleStreamingFromRDD.scala) | Data is published by Spark from an RDD, but is repartitioned even through the publishing RDD and the topic have the same number of partitions. |
-| [SendWithDifferentPartitioning.scala](src/main/scala/SendWithDifferentPartitioning.scala) | Send to a topic with different number of partitions. |
-| [ControlledPartitioning.scala](src/main/scala/ControlledPartitioning.scala) | When publishing to the topic, explicitly assign each record to a partition. |
+<table>
+<tr><th>File</th><th>What's Illustrated</th></tr>
+<tr>
+<td><a href="src/main/scala/SimpleStreamingFromRDD.scala">SimpleStreamingFromRDD.scala</a></td>
+<td>Data is published by Spark from an RDD, but is repartitioned even through the publishing RDD and the topic have the same number of partitions.</td>
+</tr>
+<tr>
+<td><a href="src/main/scala/SendWithDifferentPartitioning.scala">SendWithDifferentPartitioning.scala</a><.td>
+<td>Send to a topic with different number of partitions.</td>
+</tr>
+<tr>
+<td><a href="src/main/scala/ControlledPartitioning.scala">ControlledPartitioning.scala</a></td>
+<td>When publishing to the topic, explicitly assign each record to a partition.<.td>
+</tr>
+</table>
 
 ## Other Examples
 
@@ -94,5 +124,6 @@ partitions, and each produce RDDs with two partitions each. </td>
 ## Possible future examples
 * Multiple topics
 * Multiple streaming contexts
+* Dynamic partitioning
 * Spark 2.1 structured streaming
 
