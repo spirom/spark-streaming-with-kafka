@@ -65,7 +65,7 @@ In this set of examples you can see the relationship between a number of facets 
 <table>
 <tr><th>File</th><th>What's Illustrated</th></tr>
 <tr>
-<td><a href="src/main/scala/MultipleConsumerGroups.scala">MultipleConsumerGroups.scala</a><td>
+<td><a href="src/main/scala/MultipleConsumerGroups.scala">MultipleConsumerGroups.scala</a></td>
 <td>Two streams subscribing to the same topic via two consumer groups see all the same data.</td>
 </tr>
 <tr>
@@ -76,9 +76,3 @@ partitions, and each produce RDDs with two partitions each. </td>
 </tr>
 </table>
 
-
-| File                  | What's Illustrated    |
-|---------------------------------|-----------------------|
-| [MultipleConsumerGroups.scala](src/main/scala/MultipleConsumerGroups.scala) | Two streams subscribing to the same topic via two consumer groups see all the same data. |
-| [MultipleStreams.scala](src/main/scala/MultipleStreams.scala) | Two streams subscribing to the same topic via a single consumer group divide up the data. |
-| | There's an interesting partitioning interaction here as the streams each get data from two fo the four topic partitions, and each produce RDDs with two partitions each. |
