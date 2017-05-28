@@ -11,23 +11,22 @@ code interacts with RDD partitioning in Spark and topic partitioning in Kafka.
 ## Dependencies
 
 The project was created with IntelliJ Idea 14 Community Edition. It is known to work with
-JDK 1.7, Scala 2.11.2, Kafka 0.8.2.1, kafka-unit 0.2 and Spark 2.1.0 on Ubuntu Linux.
+JDK 1.7, Scala 2.11.2, kafka-unit 0.2 and Spark 2.1.0 with its Kafka 0.8 shim library on Ubuntu Linux.
 
 It uses the package spark-streaming-kafka-0-8 for Spark Streaming integration with Kafka.
 This is to obtain access to the stable API -- the details
 behind this are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
-## _Note:_ Using The Experimental Kafka 0.10.0 APIs
+## _Note:_ Using The Experimental (Direct DStream) Kafka 0.10.0 APIs
 
-I'm exploring the new experimental APIs based on Kafka 0.10 on the
+I'm exploring the new experimental APIs (Direct DStream instead of Receiver DStream) based on Kafka 0.10 on the
 [kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
 that branch back to master until the new APIs become mainstream, which
 probably won't be anytime soon. The functional differences are causing me to reorganize the examples on that branch somewhat.
 
-Again, the details are explained in the
+Again, the details of the experimental APIs are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
-
 
 ## Utilities
 
