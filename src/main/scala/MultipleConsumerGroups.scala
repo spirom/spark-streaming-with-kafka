@@ -84,7 +84,7 @@ object MultipleConsumerGroups {
     // see all of the same data
     //
 
-    val props2: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer, "Group1")
+    val props2: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer, "Group2")
 
     val kafkaStream2 =
       KafkaUtils.createDirectStream(
