@@ -1,15 +1,9 @@
-import java.util.Properties
-import java.util.Arrays
+import java.util.{Arrays, Properties}
 
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
-import java.util
-
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.spark.broadcast.Broadcast
-import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 
 /**
   * The most basic streaming example: starts a Kafka server, creates a topic, creates a stream
@@ -24,7 +18,33 @@ import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, Loca
   * This seems inevitable, and is almost guaranteed to be slower
   * in a self-contained example like this.
   */
-object SimpleStreaming {
+object SimpleStreamingFromRDD {
+
+  /**
+    * Publish some data to a topic. Encapsulated here to ensure serializability.
+    * @param max
+    * @param sc
+    * @param topic
+    * @param config
+    */
+  def send(max: Int, sc: SparkContext, topic: String, config: Properties): Unit = {
+
+    // put some data in an RDD and publish to Kafka
+    val numbers = 1 to max
+    val numbersRDD = sc.parallelize(numbers, 4)
+
+    val kafkaSink = sc.broadcast(SparkKafkaSink(config))
+
+    println("*** producing data")
+
+    numbersRDD.foreach { n =>
+      // NOTE:
+      //     1) the keys and values are strings, which is important when receiving them
+      //     2) We don't specify which Kafka partition to send to, so a hash of the key
+      //        is used to determine this
+      kafkaSink.value.send(topic, "key_" + n, "string_" + n)
+    }
+  }
 
   def main (args: Array[String]) {
 
@@ -83,17 +103,8 @@ object SimpleStreaming {
       override def run() {
         val client = new SimpleKafkaClient(kafkaServer)
 
-        val numbers = 1 to max
+        send(max, sc, topic, client.basicStringStringProducer)
 
-        val producer = new KafkaProducer[String, String](client.basicStringStringProducer)
-
-        numbers.foreach { n =>
-          // NOTE:
-          //     1) the keys and values are strings, which is important when receiving them
-          //     2) We don't specify which Kafka partition to send to, so a hash of the key
-          //        is used to determine this
-          producer.send(new ProducerRecord(topic, "key_" + n, "string_" + n))
-        }
         Thread.sleep(5000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)
