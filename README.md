@@ -25,7 +25,7 @@ I'm exploring the new experimental APIs (Direct DStream instead of Receiver DStr
 that branch back to master until the new APIs become mainstream, which
 probably won't be anytime soon. The functional differences are causing me to reorganize the examples somewhat.
 
-Again, the details are explained in the
+Again, the details of the experimental APIs are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
 
