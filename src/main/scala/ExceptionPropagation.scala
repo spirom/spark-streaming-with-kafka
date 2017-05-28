@@ -8,7 +8,8 @@ import util.{EmbeddedKafkaServer, SimpleKafkaClient}
 /**
   * This example demonstrates that exceptions encountered in stream processing are
   * rethrown from the call to awaitTermination().
-  * See https://issues.apache.org/jira/browse/SPARK-17397
+  * See https://issues.apache.org/jira/browse/SPARK-17397 .
+  * Notice this example doesn't even publish any data: the exception is thrown when an empty RDD is received.
   */
 object ExceptionPropagation {
 
@@ -30,8 +31,6 @@ object ExceptionPropagation {
 
     // streams will produce data every second
     val ssc = new StreamingContext(sc, Seconds(1))
-
-    val max = 10
 
     val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
