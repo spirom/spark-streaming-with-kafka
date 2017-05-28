@@ -76,7 +76,7 @@ In this set of examples you can see the relationship between a number of facets 
 
 When running these examples, look for:
 * The topic partition number that is printed with each ConsumerRecord
-* After all the records are printed, the number of partitions in the resulting RDD and size of each partition. For example:
+* After all the records are printed, the number of partitions in the resulting RDD and size of each partition. For example:</br>
     *** 4 partitions</br>
     *** partition size = 253</br>
     *** partition size = 252</br>
