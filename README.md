@@ -60,8 +60,11 @@ In this set of examples you can see the relationship between a number of facets 
 | [SendWithDifferentPartitioning.scala](src/main/scala/SendWithDifferentPartitioning.scala) | Send to a topic with different number of partitions. |
 | [ControlledPartitioning.scala](src/main/scala/ControlledPartitioning.scala) | When publishing to the topic, explicitly assign each record to a partition. |
 
-## Other Examples
+## Other Group Examples
 
 | File                  | What's Illustrated    |
 |---------------------------------|-----------------------|
 | [MultipleConsumerGroups.scala](src/main/scala/MultipleConsumerGroups.scala) | Two streams subscribing to the same topic via two consumer groups see all the same data. |
+| [MultipleStreams.scala](src/main/scala/MultipleStreams.scala) | Two streams subscribing to the same topic via a single consumer group divide up the data.
+There's an interesting partitioning interaction here as the streams each get data from two fo the four topic partitions, and each produce RDDs with two partitions each. |
+
