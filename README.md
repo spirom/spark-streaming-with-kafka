@@ -77,11 +77,11 @@ In this set of examples you can see the relationship between a number of facets 
 When running these examples, look for:
 * The topic partition number that is printed with each ConsumerRecord
 * After all the records are printed, the number of partitions in the resulting RDD and size of each partition. For example:
-    *** 4 partitions
-    *** partition size = 253
-    *** partition size = 252
-    *** partition size = 258
-    *** partition size = 237
+    *** 4 partitions</br>
+    *** partition size = 253</br>
+    *** partition size = 252</br>
+    *** partition size = 258</br>
+    *** partition size = 237</br>
 
 
 Another way these examples differ from the basic examples above is that Spark is used to publish to the topic.
