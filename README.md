@@ -18,7 +18,7 @@ This is to obtain access to the stable API -- the details
 behind this are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
-## Using the Experimental Kafka 0.10.0 APIs
+## Using the Experimental (Direct DStream) Kafka 0.10.0 APIs
 
 I'm exploring the new experimental APIs (Direct DStream instead of Receiver DStream) based on Kafka 0.10 on the
 [kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
@@ -96,7 +96,7 @@ An alternative approach to this can be found [here](https://docs.cloud.databrick
 <td>Data is published by Spark from an RDD, but is repartitioned even through the publishing RDD and the topic have the same number of partitions.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/SendWithDifferentPartitioning.scala">SendWithDifferentPartitioning.scala</a><.td>
+<td><a href="src/main/scala/SendWithDifferentPartitioning.scala">SendWithDifferentPartitioning.scala</a></td>
 <td>Send to a topic with different number of partitions.</td>
 </tr>
 <tr>
