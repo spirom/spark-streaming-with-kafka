@@ -49,6 +49,11 @@ Again, the details of the experimental APIs are explained in the
 <td><a href="src/main/scala/util/SparkKafkaSink.scala">util/SparkKafkaSink.scala</a></td>
 <td>Support for publishing to Kafka topic in parallel from Spark.</td>
 </tr>
+<tr>
+<td><a href="src/main/scala/util/PartitionMapAnalyzer.scala">util/PartitionMapAnalyzer.scala</a></td>
+<td>Support for understanding how subscribed Kafka topics and their Kafka partitions map to partitions in the
+RDD that is emitted by the Spark stream.</td>
+</tr>
 </table>
 
 ## Basic Examples
@@ -119,10 +124,41 @@ An alternative approach to this can be found [here](https://docs.cloud.databrick
 There's an interesting partitioning interaction here as the streams each get data from two fo the four topic
 partitions, and each produce RDDs with two partitions each. </td>
 </tr>
+<tr>
+<td><a href="src/main/scala/MultipleTopics.scala">MultipleTopics.scala</a></td>
+<td>A single stream subscribing to the two topics receives data from both of them.
+The partitioning behavior here is quite interesting.
+<ul>
+<li>The topics have three and six partitions respectively.</li>
+<li>Each RDD has nine partitions.</li>
+<li>Each RDD partition receives data from exactly one partition of one topic.</li>
+</ul>
+Hence the output of the PartitionMapAnalyzer:
+<pre>
+*** got an RDD, size = 200
+*** 9 partitions
+*** partition 1 has 27 records
+*** rdd partition = 1, topic = foo, topic partition = 0, record count = 27.
+*** partition 2 has 15 records
+*** rdd partition = 2, topic = bar, topic partition = 1, record count = 15.
+*** partition 3 has 17 records
+*** rdd partition = 3, topic = bar, topic partition = 0, record count = 17.
+*** partition 4 has 39 records
+*** rdd partition = 4, topic = foo, topic partition = 1, record count = 39.
+*** partition 5 has 34 records
+*** rdd partition = 5, topic = foo, topic partition = 2, record count = 34.
+*** partition 6 has 11 records
+*** rdd partition = 6, topic = bar, topic partition = 3, record count = 11.
+*** partition 7 has 18 records
+*** rdd partition = 7, topic = bar, topic partition = 4, record count = 18.
+*** partition 8 has 20 records
+*** rdd partition = 8, topic = bar, topic partition = 2, record count = 20.
+</pre>
+</td>
+</tr>
 </table>
 
 ## Possible future examples
-* Multiple topics
 * Multiple streaming contexts
 * Dynamic partitioning
 * Spark 2.1 structured streaming
