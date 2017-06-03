@@ -106,7 +106,18 @@ An alternative approach to this can be found [here](https://docs.cloud.databrick
 </tr>
 <tr>
 <td><a href="src/main/scala/ControlledPartitioning.scala">ControlledPartitioning.scala</a></td>
-<td>When publishing to the topic, explicitly assign each record to a partition.<.td>
+<td>When publishing to the topic, explicitly assign each record to a partition.</td>
+</tr>
+<tr>
+<td><a href="src/main/scala/AddPartitionsWhileStreaming.scala">AddPartitionsWhileStreaming.scala</a></td>
+<td><p>Partitions can be added to a Kafka topic dynamically. This example shows that an existing stream
+will not see the data published to the new partitions, and only when the existing streaming context is terminated
+and a new stream is started from a new context will that data be delivered.</p>
+<p>
+The topic is created with three partitions, and so each RDD the stream produces has three partitions as well,
+even after two more partitions are added to the topic. When a new stream is subsequently created, the RDDs produced
+have five partitions, but only two of them contain data, as all the data has been drained from the initial three
+partitions of the topic, by the first stream.</p></td>
 </tr>
 </table>
 
