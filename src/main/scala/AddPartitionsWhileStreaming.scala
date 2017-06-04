@@ -76,20 +76,20 @@ object AddPartitionsWhileStreaming {
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
-      println("*** got an RDD, size = " + r.count())
+      println("[1] *** got an RDD, size = " + r.count())
       r.foreach(s => println(s))
       if (r.count() > 0) {
         // let's see how many partitions the resulting RDD has -- notice that it has nothing
         // to do with the number of partitions in the RDD used to publish the data (4), nor
         // the number of partitions of the topic (which also happens to be four.)
-        println("*** " + r.getNumPartitions + " partitions")
-        r.glom().foreach(a => println("*** partition size = " + a.size))
+        println("[1] *** " + r.getNumPartitions + " partitions")
+        r.glom().foreach(a => println("[1] *** partition size = " + a.size))
       }
     })
 
     ssc.start()
 
-    println("*** started termination monitor")
+    println("*** started streaming context")
 
     // streams seem to need some time to get going
     Thread.sleep(5000)
@@ -129,14 +129,14 @@ object AddPartitionsWhileStreaming {
       )
 
     kafkaStream2.foreachRDD(r => {
-      println("X*** got an RDD, size = " + r.count())
+      println("[2] *** got an RDD, size = " + r.count())
       r.foreach(s => println(s))
       if (r.count() > 0) {
         // let's see how many partitions the resulting RDD has -- notice that it has nothing
         // to do with the number of partitions in the RDD used to publish the data (4), nor
         // the number of partitions of the topic (which also happens to be four.)
-        println("X*** " + r.getNumPartitions + " partitions")
-        r.glom().foreach(a => println("*** partition size = " + a.size))
+        println("[2] *** " + r.getNumPartitions + " partitions")
+        r.glom().foreach(a => println("[2] *** partition size = " + a.size))
       }
     })
 

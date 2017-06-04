@@ -115,9 +115,40 @@ will not see the data published to the new partitions, and only when the existin
 and a new stream is started from a new context will that data be delivered.</p>
 <p>
 The topic is created with three partitions, and so each RDD the stream produces has three partitions as well,
-even after two more partitions are added to the topic. When a new stream is subsequently created, the RDDs produced
+even after two more partitions are added to the topic. This is what's received after the first 500 records
+are published to the topic while it has only three partitions:</p>
+<pre>
+[1] *** got an RDD, size = 500
+[1] *** 3 partitions
+[1] *** partition size = 155
+[1] *** partition size = 173
+[1] *** partition size = 172
+</pre>
+<p>When two partitions are added and another 500 messages are published, this is what's received
+(note both the number of partitions and the number of messages):</p>
+<pre>
+[1] *** got an RDD, size = 288
+[1] *** 3 partitions
+[1] *** partition size = 98
+[1] *** partition size = 89
+[1] *** partition size = 101
+</pre>
+
+<p>When a new stream is subsequently created, the RDDs produced
 have five partitions, but only two of them contain data, as all the data has been drained from the initial three
-partitions of the topic, by the first stream.</p></td>
+partitions of the topic, by the first stream.</p>
+
+<pre>
+[2] *** got an RDD, size = 212
+[2] *** 5 partitions
+[2] *** partition size = 0
+[2] *** partition size = 0
+[2] *** partition size = 0
+[2] *** partition size = 112
+[2] *** partition size = 100
+</pre>
+
+</td>
 </tr>
 </table>
 
