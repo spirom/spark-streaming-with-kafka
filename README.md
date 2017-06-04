@@ -136,7 +136,7 @@ are published to the topic while it has only three partitions:</p>
 
 <p>When a new stream is subsequently created, the RDDs produced
 have five partitions, but only two of them contain data, as all the data has been drained from the initial three
-partitions of the topic, by the first stream.</p>
+partitions of the topic, by the first stream. Now all 500 messages (288 + 212) from the second set have been delivered. </p>
 
 <pre>
 [2] *** got an RDD, size = 212
