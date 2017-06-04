@@ -200,8 +200,5 @@ Hence the output of the PartitionMapAnalyzer:
 </tr>
 </table>
 
-## Possible future examples
-* Multiple streaming contexts
-* Dynamic partitioning
-* Spark 2.1 structured streaming
+
 
