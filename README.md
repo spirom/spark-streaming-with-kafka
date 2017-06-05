@@ -30,9 +30,8 @@ Again, the details of the experimental APIs are explained in the
 
 # Structured Streaming
 
-THere's a separate set of examples for
-[Kafka integration with the new Structured Streaming features](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html)
-(Alpha as of SPark 2.1)
+There's a [separate set of examples](src/main/scala/simple) for
+Kafka integration with the new Structured Streaming features (Alpha as of Spark 2.1).
 
 ## Utilities
 

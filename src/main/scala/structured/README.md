@@ -1,7 +1,7 @@
 # Structured Streaming
 
 Structured Streaming (an Alpha feature in Spark 2.1) is has its own
-[programming guide](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#managing-streaming-queries)
+[programming guide](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html)
 in the official documentation. There's also a [Kafka integration guide](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html).
 
 ## Basic Examples
