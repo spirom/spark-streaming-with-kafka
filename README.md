@@ -30,7 +30,7 @@ Again, the details of the experimental APIs are explained in the
 
 # Structured Streaming
 
-There's a [separate set of examples](src/main/scala/simple) for
+There's a [separate set of examples](src/main/scala/structured) for
 Kafka integration with the new Structured Streaming features (Alpha as of Spark 2.1).
 
 ## Utilities
