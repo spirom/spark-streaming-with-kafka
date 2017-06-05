@@ -28,6 +28,11 @@ probably won't be anytime soon. The functional differences are causing me to reo
 Again, the details of the experimental APIs are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
+# Structured Streaming
+
+THere's a separate set of examples for
+[Kafka integration with the new Structured Streaming features](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html)
+(Alpha as of SPark 2.1)
 
 ## Utilities
 

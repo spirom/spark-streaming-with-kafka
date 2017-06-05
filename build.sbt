@@ -12,6 +12,9 @@ libraryDependencies += "org.apache.spark" %% "spark-streaming" % "2.1.0"
 
 libraryDependencies += "org.apache.spark" %% "spark-streaming-kafka-0-10" % "2.1.0"
 
+// Needed for structured streams
+libraryDependencies += "org.apache.spark" %% "spark-sql-kafka-0-10" % "2.1.0"
+
 libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.1.0"
 
 libraryDependencies += "info.batey.kafka" % "kafka-unit" % "0.6"
