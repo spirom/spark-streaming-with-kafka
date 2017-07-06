@@ -38,23 +38,23 @@ Kafka integration with the new Structured Streaming features (Alpha as of Spark 
 <table>
 <tr><th>File</th><th>Purpose</th></tr>
 <tr>
-<td><a href="src/main/scala/util/DirectServerDemo.scala">util/DirectServerDemo.scala</a></td>
+<td valign="top"><a href="src/main/scala/util/DirectServerDemo.scala">util/DirectServerDemo.scala</a></td>
 <td><b>Run this first as a Spark-free sanity check for embedded server and clients.</b></td>
 </tr>
 <tr>
-<td><a href="src/main/scala/util/EmbeddedKafkaServer.scala">util/EmbeddedKafkaServer.scala</a></td>
+<td valign="top"><a href="src/main/scala/util/EmbeddedKafkaServer.scala">util/EmbeddedKafkaServer.scala</a></td>
 <td>Starting and stopping an embedded Kafka server and create topics.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/util/SimpleKafkaClient.scala">util/SimpleKafkaClient.scala</a></td>
+<td valign="top"><a href="src/main/scala/util/SimpleKafkaClient.scala">util/SimpleKafkaClient.scala</a></td>
 <td>Directly connect to Kafka without using Spark.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/util/SparkKafkaSink.scala">util/SparkKafkaSink.scala</a></td>
+<td valign="top"><a href="src/main/scala/util/SparkKafkaSink.scala">util/SparkKafkaSink.scala</a></td>
 <td>Support for publishing to Kafka topic in parallel from Spark.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/util/PartitionMapAnalyzer.scala">util/PartitionMapAnalyzer.scala</a></td>
+<td valign="top"><a href="src/main/scala/util/PartitionMapAnalyzer.scala">util/PartitionMapAnalyzer.scala</a></td>
 <td>Support for understanding how subscribed Kafka topics and their Kafka partitions map to partitions in the
 RDD that is emitted by the Spark stream.</td>
 </tr>
@@ -65,11 +65,11 @@ RDD that is emitted by the Spark stream.</td>
 <table>
 <tr><th>File</th><th>What's Illustrated</th></tr>
 <tr>
-<td><a href="src/main/scala/SimpleStreaming.scala">SimpleStreaming.scala</a></td>
+<td valign="top"><a href="src/main/scala/SimpleStreaming.scala">SimpleStreaming.scala</a></td>
 <td><b>Simple way to set up streaming from a Kafka topic.</b> While this program also publishes to the topic, the publishing does not involve Spark</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/ExceptionPropagation.scala">ExceptionPropagation.scala</a></td>
+<td valign="top"><a href="src/main/scala/ExceptionPropagation.scala">ExceptionPropagation.scala</a></td>
 <td>Show how call to awaitTermination() throws propagated exceptions.</td>
 </tr>
 </table>
@@ -101,19 +101,19 @@ An alternative approach to this can be found [here](https://docs.cloud.databrick
 <table>
 <tr><th>File</th><th>What's Illustrated</th></tr>
 <tr>
-<td><a href="src/main/scala/SimpleStreamingFromRDD.scala">SimpleStreamingFromRDD.scala</a></td>
+<td valign="top"><a href="src/main/scala/SimpleStreamingFromRDD.scala">SimpleStreamingFromRDD.scala</a></td>
 <td>Data is published by Spark from an RDD, but is repartitioned even through the publishing RDD and the topic have the same number of partitions.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/SendWithDifferentPartitioning.scala">SendWithDifferentPartitioning.scala</a></td>
+<td valign="top"><a href="src/main/scala/SendWithDifferentPartitioning.scala">SendWithDifferentPartitioning.scala</a></td>
 <td>Send to a topic with different number of partitions.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/ControlledPartitioning.scala">ControlledPartitioning.scala</a></td>
+<td valign="top"><a href="src/main/scala/ControlledPartitioning.scala">ControlledPartitioning.scala</a></td>
 <td>When publishing to the topic, explicitly assign each record to a partition.</td>
 </tr>
 <tr>
-<td><a href="src/main/scala/AddPartitionsWhileStreaming.scala">AddPartitionsWhileStreaming.scala</a></td>
+<td valign="top"><a href="src/main/scala/AddPartitionsWhileStreaming.scala">AddPartitionsWhileStreaming.scala</a></td>
 <td><p>Partitions can be added to a Kafka topic dynamically. This example shows that an existing stream
 will not see the data published to the new partitions, and only when the existing streaming context is terminated
 and a new stream is started from a new context will that data be delivered.</p>
@@ -161,17 +161,17 @@ partitions of the topic, by the first stream. Now all 500 messages (288 + 212) f
 <table>
 <tr><th>File</th><th>What's Illustrated</th></tr>
 <tr>
-<td><a href="src/main/scala/MultipleConsumerGroups.scala">MultipleConsumerGroups.scala</a></td>
+<td valign="top"><a href="src/main/scala/MultipleConsumerGroups.scala">MultipleConsumerGroups.scala</a></td>
 <td>Two streams subscribing to the same topic via two consumer groups see all the same data.</td>
 </tr>
 <tr>
-<td><a href ="src/main/scala/MultipleStreams.scala">MultipleStreams.scala</a></td>
+<td valign="top"><a href ="src/main/scala/MultipleStreams.scala">MultipleStreams.scala</a></td>
 <td>Two streams subscribing to the same topic via a single consumer group divide up the data.
 There's an interesting partitioning interaction here as the streams each get data from two fo the four topic
 partitions, and each produce RDDs with two partitions each. </td>
 </tr>
 <tr>
-<td><a href="src/main/scala/MultipleTopics.scala">MultipleTopics.scala</a></td>
+<td valign="top"><a href="src/main/scala/MultipleTopics.scala">MultipleTopics.scala</a></td>
 <td>A single stream subscribing to the two topics receives data from both of them.
 The partitioning behavior here is quite interesting.
 <ul>
@@ -200,6 +200,22 @@ Hence the output of the PartitionMapAnalyzer:
 *** partition 8 has 20 records
 *** rdd partition = 8, topic = bar, topic partition = 2, record count = 20.
 </pre>
+</td>
+</tr>
+<tr>
+<td valign="top"><a href="src/main/scala/Timestamp.scala">Timestamp.scala</a></td>
+<td>
+<p>Record timestamps were introduced into Kafka 0.10 as described in
+<a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-32+-+Add+timestamps+to+Kafka+message">KIP-32</a>
+and
+<a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-33+-+Add+a+time+based+log+index">KIP-33</a>.</p>
+
+<p>This example sets up two different topics that handle timestamps differently -- topic A has the timestamp
+set by the broker when it receives the record, while topic B passes through the timestamp provided in the record
+(either programmatically when the record was created, as shown here, or otherwise automatically by the producer.)</p>
+
+<p>Since the record carries information about where its timestamp originates, its easy to subscribe to the two topics
+to create a single stream, and then examine the timestamp of every received record and its type.</p>
 </td>
 </tr>
 </table>

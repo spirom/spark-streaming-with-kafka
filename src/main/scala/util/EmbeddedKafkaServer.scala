@@ -9,6 +9,8 @@ import kafka.admin.TopicCommand
 import kafka.utils.ZkUtils
 import org.apache.kafka.common.security.JaasUtils
 
+import scala.collection.mutable.ArrayBuffer
+
 /**
   * Use https://github.com/chbatey/kafka-unit to control an embedded Kafka instance.
   */
@@ -25,9 +27,32 @@ class EmbeddedKafkaServer() {
     socket.getLocalPort
   }
 
-  def createTopic(topic: String, partitions: Int = 1) {
-    LOGGER.debug(s"Creating topic [$topic]")
-    kafkaServer.createTopic(topic, partitions)
+  def createTopic(topic: String, partitions: Int = 1, logAppendTime: Boolean = false) : Unit = {
+    LOGGER.debug(s"Creating [$topic]")
+
+    val arguments = Array[String](
+      "--create",
+      "--topic",
+      topic
+    ) ++ (
+    if (logAppendTime) {
+      Array[String]("--config", "message.timestamp.type=LogAppendTime")
+    } else {
+      Array[String]()
+    }) ++ Array[String](
+      "--partitions",
+      "" + partitions,
+      "--replication-factor",
+      "1"
+    )
+
+    val opts = new TopicCommand.TopicCommandOptions(arguments)
+
+    val zkUtils = ZkUtils.apply(getZkConnect,
+      30000, 30000, JaasUtils.isZkSecurityEnabled)
+
+    TopicCommand.createTopic(zkUtils, opts)
+
     LOGGER.debug(s"Finished creating topic [$topic]")
   }
 
@@ -51,7 +76,6 @@ class EmbeddedKafkaServer() {
 
     LOGGER.debug(s"Finished adding [$partitions] partitions to [$topic]")
   }
-
 
   def getKafkaConnect: String = "localhost:" + kbPort
 
