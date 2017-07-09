@@ -56,7 +56,7 @@ object SimpleStreamingFromRDD {
 
 
 
-    val conf = new SparkConf().setAppName("SimpleStreaming").setMaster("local[4]")
+    val conf = new SparkConf().setAppName("SimpleStreamingFromRDD").setMaster("local[4]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second

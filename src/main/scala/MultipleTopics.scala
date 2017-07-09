@@ -27,7 +27,7 @@ object MultipleTopics {
     kafkaServer.createTopic(topic1, 3)
     kafkaServer.createTopic(topic2, 6)
 
-    val conf = new SparkConf().setAppName("SimpleStreaming").setMaster("local[10]")
+    val conf = new SparkConf().setAppName("MultipleTopics").setMaster("local[10]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second

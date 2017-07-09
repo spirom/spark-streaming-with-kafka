@@ -51,7 +51,7 @@ object SendWithDifferentPartitioning {
 
 
 
-    val conf = new SparkConf().setAppName("PartitionedStreaming").setMaster("local[7]")
+    val conf = new SparkConf().setAppName("SendWithDifferentPartitioning").setMaster("local[7]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second

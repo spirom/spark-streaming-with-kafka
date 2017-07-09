@@ -43,7 +43,7 @@ object MultipleStreams {
     kafkaServer.start()
     kafkaServer.createTopic(topic, 4)
 
-    val conf = new SparkConf().setAppName("MultipleConsumerGroups").setMaster("local[4]")
+    val conf = new SparkConf().setAppName("MultipleStreams").setMaster("local[4]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second

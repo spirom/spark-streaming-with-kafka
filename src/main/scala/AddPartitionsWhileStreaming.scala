@@ -53,7 +53,7 @@ object AddPartitionsWhileStreaming {
 
 
 
-    val conf = new SparkConf().setAppName("PartitionedStreaming").setMaster("local[7]")
+    val conf = new SparkConf().setAppName("AddPartitionsWhileStreaming").setMaster("local[7]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second
