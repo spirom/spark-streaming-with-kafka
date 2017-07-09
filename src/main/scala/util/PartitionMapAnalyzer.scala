@@ -24,7 +24,7 @@ object PartitionMapAnalyzer {
       val partitions = r.glom().zipWithIndex()
 
       // this loop will be sequential; each iteration analyzes one partition
-      (1l to partitions.count()).foreach(n => analyzeOnePartition(partitions, n, dumpRecords))
+      (0l to partitions.count() - 1).foreach(n => analyzeOnePartition(partitions, n, dumpRecords))
 
     } else {
       println("*** RDD is empty")
