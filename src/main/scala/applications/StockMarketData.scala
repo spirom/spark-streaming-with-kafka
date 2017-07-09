@@ -17,6 +17,20 @@ class TradeData(val symbol: String, val price: Double, val volume: Long) extends
 
 }
 
+class ChunkedTradeData(val symbol: String) extends Serializable {
+  var trades = 0
+  var totalAmount = 0.0
+  var totalVolume: Long = 0
+
+  def addTrade(trade: TradeData) : Unit = {
+    trades = trades + 1
+    totalVolume = totalVolume + trade.volume
+    totalAmount = totalAmount + trade.volume * trade.price
+  }
+
+  def averagePrice = totalAmount / totalVolume
+}
+
 class TradeDataSerializer extends Serializer[TradeData] {
 
   override def close(): Unit = {}
@@ -110,19 +124,19 @@ object StockMarketData {
 
     })
 
-    def chunkingFunc(i: Iterator[TradeData]) : Iterator[Map[String,(Double, Long)]] = {
-      val m = new mutable.HashMap[String,(Double, Long)]()
+    def chunkingFunc(i: Iterator[TradeData]) : Iterator[Map[String, ChunkedTradeData]] = {
+      val m = new mutable.HashMap[String, ChunkedTradeData]()
       i.foreach {
         case trade: TradeData =>
-          if (m.contains(trade.symbol)) m(trade.symbol) = {
-            val totalPrice = m(trade.symbol)._1 + trade.price * trade.volume
-            val totalVolume = m(trade.symbol)._2 + trade.volume;
-            (totalPrice, totalVolume)
-          } else m(trade.symbol) = (trade.price * trade.volume, trade.volume)
+          if (m.contains(trade.symbol)) {
+            m(trade.symbol).addTrade(trade)
+          } else {
+            val chunked = new ChunkedTradeData(trade.symbol)
+            chunked.addTrade(trade)
+            m(trade.symbol) = chunked
+          }
       }
-      Iterator.single(m.map {
-        case (symbol, (totalPrice, totalVolume)) => (symbol, (totalPrice / totalVolume, totalVolume))
-      }.toMap)
+      Iterator.single(m.toMap)
     }
 
     val decodedFeed = rawDataFeed.map(cr => cr.value())
@@ -130,9 +144,11 @@ object StockMarketData {
     val chunkedDataFeed = decodedFeed.mapPartitions(chunkingFunc, preservePartitioning = true)
 
     chunkedDataFeed.foreachRDD(rdd => {
-      rdd.foreach(m => m.foreach {
-        case (symbol, (price, volume)) => println(s"Symbol $symbol Price $price Volume $volume")
-      })
+      rdd.foreach(m =>
+        m.foreach {
+          case (symbol, chunk) =>
+            println(s"Symbol ${chunk.symbol} Price ${chunk.averagePrice} Volume ${chunk.totalVolume} Trades ${chunk.trades}")
+        })
     })
 
     ssc.start()
