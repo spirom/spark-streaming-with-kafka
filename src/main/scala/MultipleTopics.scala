@@ -56,18 +56,6 @@ object MultipleTopics {
 
       PartitionMapAnalyzer.analyze(r)
 
-      /*
-      if (r.count() > 0) {
-        println("*** " + r.getNumPartitions + " partitions")
-        val tt = r.glom()
-        r.glom().zipWithIndex().foreach({
-          case (data: Array[ConsumerRecord[String, String]], index: Long) => {
-            println(s"*** partition $index has ${data.length} records")
-            data.foreach(cr => println(s"RDD partition $index record $cr"))
-          }
-        })
-      }
-      */
     })
 
     ssc.start()
