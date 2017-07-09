@@ -217,8 +217,8 @@ set by the broker when it receives the record, while topic B passes through the 
 <p>Since the record carries information about where its timestamp originates, its easy to subscribe to the two topics
 to create a single stream, and then examine the timestamp of every received record and its type.</p>
 
-<p>NOTE: THe use of timestamps to filter topics in the broker, as introduced in Kafka 0.10.1, is blocked on
-<a href="https://issues.apache.org/jira/browse/SPARK-18057">SPARK-18057</a></p>
+<p>NOTE: The use of timestamps to filter topics in the broker, as introduced in Kafka 0.10.1, is blocked on
+<a href="https://issues.apache.org/jira/browse/SPARK-18057">SPARK-18057</a>.</p>
 </td>
 </tr>
 </table>
