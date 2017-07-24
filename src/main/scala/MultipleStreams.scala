@@ -1,19 +1,17 @@
 import java.util.{Arrays, Properties}
 
-import kafka.serializer.StringDecoder
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * Here the topic has six partitions but instead of writing to it using the configured
-  * partitioner, we assign all records to the same partition explicitly. Although the
-  * generated RDDs still have the same number of partitions as the topic, only one
-  * partition has all the data in it. THis is a rather extreme way to use topic partitions,
-  * but it opens up the whole range of algorithms for selecting the partition when sending.
+  * This example creates two streams based on a single consumer group, so they divide up the data.
+  * There's an interesting partitioning interaction here as the streams each get data from two fo the four
+  * topic partitions, and each produce RDDs with two partitions each.
   */
-object ControlledPartitioning {
+
+object MultipleStreams {
 
   /**
     * Publish some data to a topic. Encapsulated here to ensure serializability.
@@ -26,15 +24,14 @@ object ControlledPartitioning {
 
     // put some data in an RDD and publish to Kafka
     val numbers = 1 to max
-    val numbersRDD = sc.parallelize(numbers, 5)
+    val numbersRDD = sc.parallelize(numbers, 4)
 
     val kafkaSink = sc.broadcast(SparkKafkaSink(config))
 
     println("*** producing data")
 
-    // use the overload that explicitly assigns a partition (0)
     numbersRDD.foreach { n =>
-      kafkaSink.value.send(topic, 0, "key_" + n, "string_" + n)
+      kafkaSink.value.send(topic, "key_" + n, "string_" + n)
     }
   }
 
@@ -44,11 +41,9 @@ object ControlledPartitioning {
 
     val kafkaServer = new EmbeddedKafkaServer()
     kafkaServer.start()
-    kafkaServer.createTopic(topic, 6)
+    kafkaServer.createTopic(topic, 4)
 
-
-
-    val conf = new SparkConf().setAppName("ControlledPartitioning").setMaster("local[7]")
+    val conf = new SparkConf().setAppName("MultipleStreams").setMaster("local[4]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second
@@ -56,9 +51,38 @@ object ControlledPartitioning {
 
     val max = 1000
 
+
+    //
+    // the first stream subscribes to the default consumer group in our SParkKafkaClient class
+    //
+
     val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
-    val kafkaStream =
+    val kafkaStream1 =
+    KafkaUtils.createDirectStream(
+      ssc,
+      LocationStrategies.PreferConsistent,
+      ConsumerStrategies.Subscribe[String, String](
+        Arrays.asList(topic),
+        props.asInstanceOf[java.util.Map[String, Object]]
+      )
+
+    )
+
+    kafkaStream1.foreachRDD(r => {
+      println("*** [stream 1] got an RDD, size = " + r.count())
+      r.foreach(s => println("*** [stream 1] " + s))
+      if (r.count() > 0) {
+        println("*** [stream 1] " + r.getNumPartitions + " partitions")
+        r.glom().foreach(a => println("*** [stream 1] partition size = " + a.size))
+      }
+    })
+
+    //
+    // a second stream, uses the same props and hence the same consumer group
+    //
+
+    val kafkaStream2 =
       KafkaUtils.createDirectStream(
         ssc,
         LocationStrategies.PreferConsistent,
@@ -69,16 +93,12 @@ object ControlledPartitioning {
 
       )
 
-    // now, whenever this Kafka stream produces data the resulting RDD will be printed
-    kafkaStream.foreachRDD(r => {
-      println("*** got an RDD, size = " + r.count())
-      r.foreach(s => println(s))
+    kafkaStream2.foreachRDD(r => {
+      println("*** [stream 2] got an RDD, size = " + r.count())
+      r.foreach(s => println("*** [stream 2] " + s))
       if (r.count() > 0) {
-        // let's see how many partitions the resulting RDD has -- notice that it has nothing
-        // to do with the number of partitions in the RDD used to publish the data (4), nor
-        // the number of partitions of the topic (which also happens to be four.)
-        println("*** " + r.getNumPartitions + " partitions")
-        r.glom().foreach(a => println("*** partition size = " + a.size))
+        println("*** [stream 2] " + r.getNumPartitions + " partitions")
+        r.glom().foreach(a => println("*** [stream 2] partition size = " + a.size))
       }
     })
 

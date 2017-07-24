@@ -1,19 +1,24 @@
 import java.util.{Arrays, Properties}
 
-import kafka.serializer.StringDecoder
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * Here the topic has six partitions but instead of writing to it using the configured
-  * partitioner, we assign all records to the same partition explicitly. Although the
-  * generated RDDs still have the same number of partitions as the topic, only one
-  * partition has all the data in it. THis is a rather extreme way to use topic partitions,
-  * but it opens up the whole range of algorithms for selecting the partition when sending.
+  * The most basic streaming example: starts a Kafka server, creates a topic, creates a stream
+  * to process that topic, and publishes some data using the SparkKafkaSink.
+  *
+  * Notice there's quite a lot of waiting. It takes some time for streaming to get going,
+  * and data published too early tends to be missed by the stream. (No doubt, this is partly
+  * because this example uses the simplest method to create the stream, and thus doesn't
+  * get an opportunity to set auto.offset.reset to "earliest".
+  *
+  * Also, data that is published takes some time to propagate to the stream.
+  * This seems inevitable, and is almost guaranteed to be slower
+  * in a self-contained example like this.
   */
-object ControlledPartitioning {
+object SimpleStreamingFromRDD {
 
   /**
     * Publish some data to a topic. Encapsulated here to ensure serializability.
@@ -26,15 +31,18 @@ object ControlledPartitioning {
 
     // put some data in an RDD and publish to Kafka
     val numbers = 1 to max
-    val numbersRDD = sc.parallelize(numbers, 5)
+    val numbersRDD = sc.parallelize(numbers, 4)
 
     val kafkaSink = sc.broadcast(SparkKafkaSink(config))
 
     println("*** producing data")
 
-    // use the overload that explicitly assigns a partition (0)
     numbersRDD.foreach { n =>
-      kafkaSink.value.send(topic, 0, "key_" + n, "string_" + n)
+      // NOTE:
+      //     1) the keys and values are strings, which is important when receiving them
+      //     2) We don't specify which Kafka partition to send to, so a hash of the key
+      //        is used to determine this
+      kafkaSink.value.send(topic, "key_" + n, "string_" + n)
     }
   }
 
@@ -44,18 +52,20 @@ object ControlledPartitioning {
 
     val kafkaServer = new EmbeddedKafkaServer()
     kafkaServer.start()
-    kafkaServer.createTopic(topic, 6)
+    kafkaServer.createTopic(topic, 4)
 
 
 
-    val conf = new SparkConf().setAppName("ControlledPartitioning").setMaster("local[7]")
+    val conf = new SparkConf().setAppName("SimpleStreamingFromRDD").setMaster("local[4]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second
     val ssc = new StreamingContext(sc, Seconds(1))
 
+    // this many messages
     val max = 1000
 
+    // Create the stream.
     val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
     val kafkaStream =
@@ -94,6 +104,7 @@ object ControlledPartitioning {
         val client = new SimpleKafkaClient(kafkaServer)
 
         send(max, sc, topic, client.basicStringStringProducer)
+
         Thread.sleep(5000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)

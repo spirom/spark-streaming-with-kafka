@@ -7,13 +7,13 @@ import org.apache.spark.{SparkConf, SparkContext}
 import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
 
 /**
-  * Here the topic has six partitions but instead of writing to it using the configured
-  * partitioner, we assign all records to the same partition explicitly. Although the
-  * generated RDDs still have the same number of partitions as the topic, only one
-  * partition has all the data in it. THis is a rather extreme way to use topic partitions,
-  * but it opens up the whole range of algorithms for selecting the partition when sending.
+  * This example is very similar to SimpleStreaming, except that the data is sent
+  * from an RDD with 5 partitions to a Kafka topic with 6 partitions. WThe KafkaStream consuming
+  * the topic produces RDDs with size partitions. This is because the data is repartitioned when sent,
+  * as we continue use the KafkaProducer constructor overload that doesn't allow us to specify
+  * the destination partition.
   */
-object ControlledPartitioning {
+object SendWithDifferentPartitioning {
 
   /**
     * Publish some data to a topic. Encapsulated here to ensure serializability.
@@ -32,9 +32,12 @@ object ControlledPartitioning {
 
     println("*** producing data")
 
-    // use the overload that explicitly assigns a partition (0)
     numbersRDD.foreach { n =>
-      kafkaSink.value.send(topic, 0, "key_" + n, "string_" + n)
+      // NOTE:
+      //     1) the keys and values are strings, which is important when receiving them
+      //     2) We don't specify which Kafka partition to send to, so a hash of the key
+      //        is used to determine this
+      kafkaSink.value.send(topic, "key_" + n, "string_" + n)
     }
   }
 
@@ -48,7 +51,7 @@ object ControlledPartitioning {
 
 
 
-    val conf = new SparkConf().setAppName("ControlledPartitioning").setMaster("local[7]")
+    val conf = new SparkConf().setAppName("SendWithDifferentPartitioning").setMaster("local[7]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second

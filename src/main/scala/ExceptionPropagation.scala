@@ -1,12 +1,15 @@
-import org.apache.spark.streaming.kafka.KafkaUtils
+import java.util.{Arrays, Properties}
+
+import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import util.{SimpleKafkaClient, EmbeddedKafkaServer}
+import util.{EmbeddedKafkaServer, SimpleKafkaClient}
 
 /**
   * This example demonstrates that exceptions encountered in stream processing are
   * rethrown from the call to awaitTermination().
-  * See https://issues.apache.org/jira/browse/SPARK-17397
+  * See https://issues.apache.org/jira/browse/SPARK-17397 .
+  * Notice this example doesn't even publish any data: the exception is thrown when an empty RDD is received.
   */
 object ExceptionPropagation {
 
@@ -29,21 +32,24 @@ object ExceptionPropagation {
     // streams will produce data every second
     val ssc = new StreamingContext(sc, Seconds(1))
 
-    val max = 10
+    val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
 
-    // only subscribing to one topic and all four partitions
-    val topicMap =
-    Map[String, Int](topic -> 4)
-    // Create the stream. Group doesn't matter as there won't be other subscribers.
-    // Notice that the default is to assume the topic is receiving String keys and values.
     val kafkaStream =
-    KafkaUtils.createStream(ssc, kafkaServer.getZkConnect, "MyGroup", topicMap)
+      KafkaUtils.createDirectStream(
+        ssc,
+        LocationStrategies.PreferConsistent,
+        ConsumerStrategies.Subscribe[String, String](
+          Arrays.asList(topic),
+          props.asInstanceOf[java.util.Map[String, Object]]
+        )
+
+      )
 
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
       println("*** got an RDD, size = " + r.count())
-        // throw the custom exception here and see it get caught in the code below
-        throw SomeException("error while processing RDD");
+      // throw the custom exception here and see it get caught in the code below
+      throw SomeException("error while processing RDD");
     })
 
     ssc.start()

@@ -1,49 +1,40 @@
-import java.util.Properties
-import java.util.Arrays
+import java.util.{Arrays, Properties}
 
-import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.kafka.common.serialization.StringDeserializer
-import org.apache.spark.{SparkConf, SparkContext}
-import util.{EmbeddedKafkaServer, SimpleKafkaClient, SparkKafkaSink}
-import java.util
-
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
-import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.streaming.kafka010.{ConsumerStrategies, KafkaUtils, LocationStrategies}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.spark.{SparkConf, SparkContext}
+import util.{EmbeddedKafkaServer, PartitionMapAnalyzer, SimpleKafkaClient}
 
 /**
-  * The most basic streaming example: starts a Kafka server, creates a topic, creates a stream
-  * to process that topic, and publishes some data using the SparkKafkaSink.
+  * A single stream subscribing to the two topics receives data from both of them.
+  * The partitioning behavior here is quite interesting, as the topics have three and six partitions respectively,
+  * each RDD has nine partitions, and each RDD partition receives data from exactly one partition of one topic.
   *
-  * Notice there's quite a lot of waiting. It takes some time for streaming to get going,
-  * and data published too early tends to be missed by the stream. (No doubt, this is partly
-  * because this example uses the simplest method to create the stream, and thus doesn't
-  * get an opportunity to set auto.offset.reset to "earliest".
-  *
-  * Also, data that is published takes some time to propagate to the stream.
-  * This seems inevitable, and is almost guaranteed to be slower
-  * in a self-contained example like this.
+  * Partitioning is analyzed using the PartitionMapAnalyzer.
   */
-object SimpleStreaming {
+object MultipleTopics {
 
   def main (args: Array[String]) {
 
-    val topic = "foo"
+    val topic1 = "foo"
+    val topic2 = "bar"
 
+    // topics are partitioned differently
     val kafkaServer = new EmbeddedKafkaServer()
     kafkaServer.start()
-    kafkaServer.createTopic(topic, 4)
+    kafkaServer.createTopic(topic1, 3)
+    kafkaServer.createTopic(topic2, 6)
 
-
-
-    val conf = new SparkConf().setAppName("SimpleStreaming").setMaster("local[4]")
+    val conf = new SparkConf().setAppName("MultipleTopics").setMaster("local[10]")
     val sc = new SparkContext(conf)
 
     // streams will produce data every second
     val ssc = new StreamingContext(sc, Seconds(1))
 
     // this many messages
-    val max = 1000
+    val max = 100
 
     // Create the stream.
     val props: Properties = SimpleKafkaClient.getBasicStringStringConsumer(kafkaServer)
@@ -53,7 +44,7 @@ object SimpleStreaming {
         ssc,
         LocationStrategies.PreferConsistent,
         ConsumerStrategies.Subscribe[String, String](
-          Arrays.asList(topic),
+          Arrays.asList(topic1, topic2),
           props.asInstanceOf[java.util.Map[String, Object]]
         )
 
@@ -62,24 +53,19 @@ object SimpleStreaming {
     // now, whenever this Kafka stream produces data the resulting RDD will be printed
     kafkaStream.foreachRDD(r => {
       println("*** got an RDD, size = " + r.count())
-      r.foreach(s => println(s))
-      if (r.count() > 0) {
-        // let's see how many partitions the resulting RDD has -- notice that it has nothing
-        // to do with the number of partitions in the RDD used to publish the data (4), nor
-        // the number of partitions of the topic (which also happens to be four.)
-        println("*** " + r.getNumPartitions + " partitions")
-        r.glom().foreach(a => println("*** partition size = " + a.size))
-      }
+
+      PartitionMapAnalyzer.analyze(r)
+
     })
 
     ssc.start()
 
-    println("*** started termination monitor")
+    println("*** started streaming context")
 
     // streams seem to need some time to get going
     Thread.sleep(5000)
 
-    val producerThread = new Thread("Streaming Termination Controller") {
+    val producerThreadTopic1 = new Thread("Producer thread 1") {
       override def run() {
         val client = new SimpleKafkaClient(kafkaServer)
 
@@ -92,14 +78,35 @@ object SimpleStreaming {
           //     1) the keys and values are strings, which is important when receiving them
           //     2) We don't specify which Kafka partition to send to, so a hash of the key
           //        is used to determine this
-          producer.send(new ProducerRecord(topic, "key_" + n, "string_" + n))
+          producer.send(new ProducerRecord(topic1, "key_1_" + n, "string_1_" + n))
         }
-        Thread.sleep(5000)
+
+      }
+    }
+
+    val producerThreadTopic2 = new Thread("Producer thread 2; controlling termination") {
+      override def run() {
+        val client = new SimpleKafkaClient(kafkaServer)
+
+        val numbers = 1 to max
+
+        val producer = new KafkaProducer[String, String](client.basicStringStringProducer)
+
+        numbers.foreach { n =>
+          // NOTE:
+          //     1) the keys and values are strings, which is important when receiving them
+          //     2) We don't specify which Kafka partition to send to, so a hash of the key
+          //        is used to determine this
+          producer.send(new ProducerRecord(topic2, "key_2_" + n, "string_2_" + n))
+        }
+        Thread.sleep(10000)
         println("*** requesting streaming termination")
         ssc.stop(stopSparkContext = false, stopGracefully = true)
       }
     }
-    producerThread.start()
+
+    producerThreadTopic1.start()
+    producerThreadTopic2.start()
 
     try {
       ssc.awaitTermination()
