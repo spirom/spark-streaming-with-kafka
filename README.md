@@ -18,12 +18,10 @@ This is to obtain access to the stable API -- the details
 behind this are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
 
-## _Note:_ Using The Experimental (Direct DStream) Kafka 0.10.0 APIs
+## No longer exploring the Kafka 0.8.0 APIs
 
-I'm exploring the new experimental APIs (Direct DStream instead of Receiver DStream) based on Kafka 0.10 on the
-[kafka0.10](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.10) branch, and probably won't merge
-that branch back to master until the new APIs become mainstream, which
-probably won't be anytime soon. The functional differences are causing me to reorganize the examples on that branch somewhat.
+New experimental APIs (Direct DStream instead of Receiver DStream) based on Kafka 0.10 were introduced in Spark 2.1.0.
+I'm keeping this branch around for anyone still using the 0.80 APIs and will now merge the kafka0.10 branch to master.
 
 Again, the details of the experimental APIs are explained in the
 [Spark 2.1.0 documentation](https://spark.apache.org/docs/2.1.0/streaming-kafka-integration.html).
