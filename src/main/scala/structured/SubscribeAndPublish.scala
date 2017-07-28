@@ -5,7 +5,7 @@ import java.io.File
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.streaming.{ProcessingTime, Trigger}
-import util.{EmbeddedKafkaServer, SimpleKafkaClient}
+import util.{Checkpoints, EmbeddedKafkaServer, SimpleKafkaClient}
 
 /**
   * Two Kafka topics are set up and a KafkaProducer is used to publish to the first topic.
@@ -38,18 +38,13 @@ object SubscribeAndPublish {
     }
     Thread.sleep(5000)
 
-    val checkpointPath = java.io.File.separator + "tmp" + java.io.File.separator + "SSWK" +
-      File.separator + "checkpoints"
-    val checkpointDir = new File(checkpointPath)
-    checkpointDir.delete()
-    checkpointDir.mkdir
-    checkpointDir.deleteOnExit()
+    val checkpointPath = Checkpoints.create
 
     println("*** Starting to stream")
 
     val spark = SparkSession
       .builder
-      .appName("Structured_Simple")
+      .appName("Structured_SubscribeAndPublish")
       .config("spark.master", "local[4]")
       .getOrCreate()
 
@@ -64,7 +59,6 @@ object SubscribeAndPublish {
       .load()
 
     val counts = ds1.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-      .as[(String, String)]
       .groupBy()
       .count()
 
@@ -92,20 +86,20 @@ object SubscribeAndPublish {
 
     val query = counts2
       .writeStream
-      .trigger(Trigger.ProcessingTime("10 seconds"))
+      .trigger(Trigger.ProcessingTime("4 seconds"))
       .format("console")
       .start()
 
     println("*** done setting up streaming")
 
-    Thread.sleep(5000)
+    Thread.sleep(2000)
 
     println("*** publishing more messages")
     numbers.foreach { n =>
       producer.send(new ProducerRecord(topic1, "key_" + n, "string_" + n))
     }
 
-    Thread.sleep(5000)
+    Thread.sleep(8000)
 
     println("*** Stopping stream")
     query.stop()

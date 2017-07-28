@@ -5,14 +5,11 @@ import org.apache.spark.sql.SparkSession
 import util.{EmbeddedKafkaServer, SimpleKafkaClient}
 
 /**
-  * A very simple example of structured streaming from a Kafka source, where the messages
-  * are produced directly via calls to a KafkaProducer. A streaming DataFrame is created from a
-  * single Kafka topic, and feeds all the data received to a streaming computation that outputs it to a console.
-  *
-  * Note that writing all the incremental data in each batch to output only makes sense because there is no
-  * aggregation performed. In subsequent examples with aggregation this will not be possible.
+  * A streaming DataFrame is created from a single Kafka topic, an aggregating query is set up to count
+  * occurrences of each key, and the results are streamed to a console. Each batch results in the entire
+  * aggregation result to date being output.
   */
-object Simple {
+object SimpleAggregation {
 
   def main (args: Array[String]) {
 
@@ -27,12 +24,12 @@ object Simple {
 
     // publish some messages
     println("*** Publishing messages")
-    val max = 5
+    val max = 1000
     val client = new SimpleKafkaClient(kafkaServer)
     val numbers = 1 to max
     val producer = new KafkaProducer[String, String](client.basicStringStringProducer)
     numbers.foreach { n =>
-      producer.send(new ProducerRecord(topic, "[1]key_" + n, "[1]string_" + n))
+      producer.send(new ProducerRecord(topic, "key_" + (n % 4), "string_" + n))
     }
     Thread.sleep(5000)
 
@@ -40,9 +37,11 @@ object Simple {
 
     val spark = SparkSession
       .builder
-      .appName("Structured_SimpleAggregation")
+      .appName("Structured_Simple")
       .config("spark.master", "local[4]")
       .getOrCreate()
+
+    import spark.implicits._
 
     val ds1 = spark
       .readStream
@@ -53,9 +52,12 @@ object Simple {
       .load()
 
     val counts = ds1.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+      .groupBy("key")
+      .count()
 
     val query = counts.writeStream
-      .format("console") // write all counts to console when updated
+      .outputMode("complete")
+      .format("console")
       .start()
 
     println("*** done setting up streaming")
@@ -64,7 +66,7 @@ object Simple {
 
     println("*** publishing more messages")
     numbers.foreach { n =>
-      producer.send(new ProducerRecord(topic, "[2]key_" + n, "[2]string_" + n))
+      producer.send(new ProducerRecord(topic, "key_" + (n % 4), "string_" + n))
     }
 
     Thread.sleep(5000)
