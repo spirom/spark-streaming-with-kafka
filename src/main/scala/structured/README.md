@@ -1,6 +1,6 @@
 # Structured Streaming
 
-Structured Streaming (an Alpha feature in Spark 2.1) is has its own
+Structured Streaming (an Alpha feature in Spark 2.1, but a mainstream feature in Spark 2.2) has its own
 [programming guide](https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html)
 in the official documentation. There's also a [Kafka integration guide](https://spark.apache.org/docs/latest/structured-streaming-kafka-integration.html).
 
@@ -35,6 +35,27 @@ second topic. Finally structured streaming is used to subscribe to the second to
 </p>
 </td>
 </tr>
+
+<tr>
+<td><a href="Foreach.scala">Foreach.scala</a></td>
+<td>
+<p>
+The 'foreach' operation allows arbitrary computations on the output data in way that is both
+partition-aware (computed on the executors and aware of which partition is being processed) and batch-aware
+(via a separate invocation for each partition/batch combination.)
+<p></p>
+It is always used by passing the operation an object that implements the 'ForeachWriter' interface. In this
+example, the object doesn't do any "useful" work: instead it is set up to illustrate its slightly arcane state
+management by printing its arguments and state in each of the three overridden methods.
+<p></p>
+Each instance of ForeachWriter is used for processing a sequence of partition/batch combinations, but at any point
+in time is is setup (via a single open() call) to process one partition/batch combination. Then it gets multiple
+process() calls, providing the the actual data for that partition and batch, and then a single close() call to
+signal that the partition/batch combination has been completely processed.
+</p>
+</td>
+</tr>
+
 
 </table>
 

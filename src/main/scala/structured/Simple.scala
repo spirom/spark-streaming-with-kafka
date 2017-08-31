@@ -40,7 +40,7 @@ object Simple {
 
     val spark = SparkSession
       .builder
-      .appName("Structured_SimpleAggregation")
+      .appName("Structured_Simple")
       .config("spark.master", "local[4]")
       .getOrCreate()
 
