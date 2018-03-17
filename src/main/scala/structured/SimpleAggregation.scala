@@ -75,6 +75,8 @@ object SimpleAggregation {
     query.stop()
 
     query.awaitTermination()
+    spark.stop()
+
     println("*** Streaming terminated")
 
     // stop Kafka

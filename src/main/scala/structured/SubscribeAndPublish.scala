@@ -5,7 +5,7 @@ import java.io.File
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.streaming.{ProcessingTime, Trigger}
-import util.{Checkpoints, EmbeddedKafkaServer, SimpleKafkaClient}
+import util.{TemporaryDirectories, EmbeddedKafkaServer, SimpleKafkaClient}
 
 /**
   * Two Kafka topics are set up and a KafkaProducer is used to publish to the first topic.
@@ -38,7 +38,7 @@ object SubscribeAndPublish {
     }
     Thread.sleep(5000)
 
-    val checkpointPath = Checkpoints.create
+    val checkpointPath = kafkaServer.tempDirs.checkpointPath
 
     println("*** Starting to stream")
 
@@ -105,6 +105,8 @@ object SubscribeAndPublish {
     query.stop()
 
     query.awaitTermination()
+    spark.stop()
+
     println("*** Streaming terminated")
 
     // stop Kafka

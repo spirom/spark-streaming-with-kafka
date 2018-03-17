@@ -11,19 +11,19 @@ code interacts with RDD partitioning in Spark and topic partitioning in Kafka.
 ## Dependencies
 
 The project was created with IntelliJ Idea 14 Community Edition. It is known to work with
-JDK 1.8, Scala 2.11.2, kafka-unit 0.6 and Spark 2.2.0 with its Kafka 0.10 shim library on Ubuntu Linux.
+JDK 1.8, Scala 2.11.12, and Spark 2.3.0 with its Kafka 0.10 shim library on Ubuntu Linux.
 
-It uses the (still "experimental", Direct DStream) package spark-streaming-kafka-0-10 for
-Spark Streaming integration with Kafka 0.10.0. The details behind this are explained in the
-[Spark 2.2.0 documentation](https://spark.apache.org/docs/2.2.0/streaming-kafka-integration.html).
+It uses the Direct DStream package spark-streaming-kafka-0-10 for
+Spark Streaming integration with Kafka 0.10.0.1. The details behind this are explained in the
+[Spark 2.3.0 documentation](https://spark.apache.org/docs/2.3.0/streaming-kafka-integration.html).
 
-## Using the Stable (Receiver DStream) Kafka 0.8.0 APIs
+Note that, with the release of Spark 2.3.0, the formerly stable Receiver DStream APIs are now deprecated, and the
+formerly experimental Direct DStream APIs are now stable.
+
+## Using the deprecated (Receiver DStream) Kafka 0.8.0 APIs
 
 I've kept around the examples for the older, stable Kafka integration on the
 [kafka0.8](https://github.com/spirom/spark-streaming-with-kafka/tree/kafka0.8) branch
-
-Again, the details of the experimental APIs are explained in the
-[Spark 2.2.0 documentation](https://spark.apache.org/docs/2.2.0/streaming-kafka-integration.html).
 
 # Structured Streaming
 
@@ -40,7 +40,16 @@ Kafka integration with the new Structured Streaming features (mainstream as of S
 </tr>
 <tr>
 <td valign="top"><a href="src/main/scala/util/EmbeddedKafkaServer.scala">util/EmbeddedKafkaServer.scala</a></td>
-<td>Starting and stopping an embedded Kafka server and create topics.</td>
+<td>Starting and stopping an embedded Kafka server, and creating and modifying topics.</td>
+</tr>
+<tr>
+<td valign="top"><a href="src/main/scala/util/EmbeddedZookeeper.scala">util/EmbeddedZookeeper.scala</a></td>
+<td>Starting and stopping an embedded Zookeeper.</td>
+</tr>
+<tr>
+<td valign="top"><a href="src/main/scala/util/PartitionMapAnalyzer.scala">util/PartitionMapAnalyzer.scala</a></td>
+<td>Support for understanding how subscribed Kafka topics and their Kafka partitions map to partitions in the
+RDD that is emitted by the Spark stream.</td>
 </tr>
 <tr>
 <td valign="top"><a href="src/main/scala/util/SimpleKafkaClient.scala">util/SimpleKafkaClient.scala</a></td>
@@ -51,9 +60,9 @@ Kafka integration with the new Structured Streaming features (mainstream as of S
 <td>Support for publishing to Kafka topic in parallel from Spark.</td>
 </tr>
 <tr>
-<td valign="top"><a href="src/main/scala/util/PartitionMapAnalyzer.scala">util/PartitionMapAnalyzer.scala</a></td>
-<td>Support for understanding how subscribed Kafka topics and their Kafka partitions map to partitions in the
-RDD that is emitted by the Spark stream.</td>
+<td valign="top"><a href="src/main/scala/util/TemporaryDirectories.scala">util/TemporaryDirectories.scala</a></td>
+<td>Support for creating and cleaning up temporary directories needed for Kafka broker, Zookeeper and
+Spark streaming.</td>
 </tr>
 </table>
 

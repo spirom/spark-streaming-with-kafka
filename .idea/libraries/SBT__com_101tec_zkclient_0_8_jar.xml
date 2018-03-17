@@ -4,8 +4,6 @@
       <root url="jar://$USER_HOME$/.ivy2/cache/com.101tec/zkclient/jars/zkclient-0.8.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.ivy2/cache/com.101tec/zkclient/srcs/zkclient-0.8-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>
