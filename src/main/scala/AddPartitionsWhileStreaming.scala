@@ -112,6 +112,14 @@ object AddPartitionsWhileStreaming {
 
     println("*** stop first streaming context")
     ssc.stop(stopSparkContext = false)
+    try {
+      ssc.awaitTermination()
+      println("*** streaming terminated for the first time")
+    } catch {
+      case e: Exception => {
+        println("*** streaming exception caught in monitor thread (first context)")
+      }
+    }
 
     println("*** create second streaming context")
     val ssc2 = new StreamingContext(sc, Seconds(1))
