@@ -8,6 +8,20 @@ about functionality, although we sometimes get insight into performance issues b
 the way the
 code interacts with RDD partitioning in Spark and topic partitioning in Kafka.
 
+## Related projects
+
+This project is derived from the
+[LearningSpark project](https://github.com/spirom/LearningSpark) which explores the full range of Spark APIs from the
+viewpoint of Scala developers. There is a corresponding, but much less comprehensive Java version at
+[learning-spark-with-java](https://github.com/spirom/learning-spark-with-java).
+
+The [spark-data-sources](https://github.com/spirom/spark-data-sources) project is focused on
+the new experimental APIs introduced in Spark 2.3.0 for developing adapters for
+external data sources of
+various kinds. This API is essentially a Java API (developed in Java) to avoid forcing
+developers to adopt Scala for their data source adapters. Consequently, the example data sources
+in this project are written in Java, but both Java and Scala usage examples are provided.
+
 ## Dependencies
 
 The project was created with IntelliJ Idea 14 Community Edition. It is known to work with
