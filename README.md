@@ -1,5 +1,7 @@
 # Self-contained examples of Spark streaming integrated with Kafka
 
+[![Build Status](https://travis-ci.org/spirom/spark-streaming-with-kafka.svg?branch=master)](https://travis-ci.org/spirom/spark-streaming-with-kafka)
+
 The goal of this project is to make it easy to experiment with Spark Streaming based on Kafka,
 by creating examples that run against an embedded Kafka server and an embedded Spark instance.
 Of course, in making everything easy to work with we also make it perform poorly. It would be a
